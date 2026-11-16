@@ -1,7 +1,7 @@
 import { type Request, type Response, type NextFunction } from 'express'
 
 import { ordersCollection } from '../data/mongodb'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 export function orderHistory () {
   return async (req: Request, res: Response, next: NextFunction) => {

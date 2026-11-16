@@ -2,7 +2,7 @@ import { type Request, type Response, type NextFunction } from 'express'
 import { Op } from 'sequelize'
 
 import { ImageCaptchaModel } from '../models/imageCaptcha'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 export function imageCaptchas () {
   return async (req: Request, res: Response) => {

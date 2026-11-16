@@ -1,7 +1,7 @@
 import { type Request, type Response, type NextFunction } from 'express'
 import { UserModel } from '../models/user'
 import { decode } from 'jsonwebtoken'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 async function retrieveUserList (req: Request, res: Response, next: NextFunction) {
   try {

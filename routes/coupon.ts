@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from 'express'
 import { BasketModel } from '../models/basket'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 export function applyCoupon () {
   return async ({ params }: Request, res: Response, next: NextFunction) => {

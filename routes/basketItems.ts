@@ -3,7 +3,7 @@ import { BasketItemModel } from '../models/basketitem'
 import { QuantityModel } from '../models/quantity'
 
 import * as utils from '../lib/utils'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 interface RequestWithRawBody extends Request {
   rawBody: string

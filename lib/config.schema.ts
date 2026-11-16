@@ -52,7 +52,7 @@ const PromotionSchema = z.object({
   subtitles: z.string()
 })
 
-const EasterEggPlanetSchema = z.object({
+const PlanetPageSchema = z.object({
   name: z.string(),
   overlayMap: z.string()
 })
@@ -87,7 +87,7 @@ export const ApplicationSchema = z.object({
   cookieConsent: CookieConsentSchema,
   securityTxt: SecurityTxtSchema,
   promotion: PromotionSchema,
-  easterEggPlanet: EasterEggPlanetSchema,
+  planetPage: PlanetPageSchema,
   googleOauth: GoogleOauthSchema
 })
 
@@ -115,23 +115,23 @@ export const ProductSchema = z.object({
   deluxePrice: z.number().optional(),
   limitPerUser: z.number().optional(),
   reviews: z.array(z.object({ text: z.string(), author: z.string() })).optional(),
-  urlForProductTamperingChallenge: z.string().optional(),
-  useForChristmasSpecialChallenge: z.boolean().optional(),
-  keywordsForPastebinDataLeakChallenge: z.array(z.string()).optional(),
+  infoUrl: z.string().optional(),
+  isSeasonalSpecial: z.boolean().optional(),
+  ingredientKeywords: z.array(z.string()).optional(),
   deletedDate: z.string().optional(),
   quantity: z.number().optional(),
-  fileForRetrieveBlueprintChallenge: z.string().optional(),
-  exifForBlueprintChallenge: z.array(z.string()).optional()
+  blueprintFile: z.string().optional(),
+  blueprintExif: z.array(z.string()).optional()
 })
 
 export const MemorySchema = z.object({
   image: z.string(),
   caption: z.string(),
   user: z.string().optional(),
-  geoStalkingMetaSecurityQuestion: z.number().optional(),
-  geoStalkingMetaSecurityAnswer: z.string().optional(),
-  geoStalkingVisualSecurityQuestion: z.number().optional(),
-  geoStalkingVisualSecurityAnswer: z.string().optional()
+  primarySecurityQuestion: z.number().optional(),
+  primarySecurityAnswer: z.string().optional(),
+  secondarySecurityQuestion: z.number().optional(),
+  secondarySecurityAnswer: z.string().optional()
 })
 
 export const AppConfigSchema = z.object({
@@ -165,7 +165,7 @@ export const ValidationSchema = z.preprocess(dropNulls, z.object({
     cookieConsent: CookieConsentSchema.partial().optional(),
     securityTxt: SecurityTxtSchema.partial().optional(),
     promotion: PromotionSchema.partial().optional(),
-    easterEggPlanet: EasterEggPlanetSchema.partial().optional(),
+    planetPage: PlanetPageSchema.partial().optional(),
     googleOauth: GoogleOauthSchema.partial().optional()
   }).optional(),
   products: z.array(ProductSchema.partial()).optional(),

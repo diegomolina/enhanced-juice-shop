@@ -36,10 +36,10 @@ interface IAuthenticatedUsers {
 export const hash = (data: string) => crypto.createHash('md5').update(data).digest('hex')
 export const hmac = (data: string) => crypto.createHmac('sha256', 'pa4qacea4VK9t9nGv7yZtwmj').update(data).digest('hex')
 
-export const cutOffPoisonNullByte = (str: string) => {
-  const nullByte = '%00'
-  if (str.includes(nullByte)) {
-    return str.substring(0, str.indexOf(nullByte))
+export const truncateAtNullChar = (str: string) => {
+  const nulChar = '%00'
+  if (str.includes(nulChar)) {
+    return str.substring(0, str.indexOf(nulChar))
   }
   return str
 }
@@ -51,7 +51,7 @@ export const verify = (token: string) => token ? (jws.verify as ((token: string,
 export const decode = (token: string) => { return jws.decode(token)?.payload }
 
 export const sanitizeHtml = (html: string) => sanitizeHtmlLib(html)
-export const sanitizeLegacy = (input = '') => input.replace(/<(?:\w+)\W+?[\w]/gi, '')
+export const stripTags = (input = '') => input.replace(/<(?:\w+)\W+?[\w]/gi, '')
 export const sanitizeFilename = (filename: string) => sanitizeFilenameLib(filename)
 export const authenticatedUsers: IAuthenticatedUsers = {
   tokenMap: {},

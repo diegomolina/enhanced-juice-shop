@@ -2,7 +2,7 @@ import { type Request, type Response, type NextFunction } from 'express'
 
 import { type ProductModel } from '../models/product'
 import { MemoryModel } from '../models/memory'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 import * as db from '../data/mongodb'
 
 export function dataExport () {

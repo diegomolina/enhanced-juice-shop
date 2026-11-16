@@ -9,7 +9,7 @@ import { QuantityModel } from '../models/quantity'
 import { ProductModel } from '../models/product'
 import { BasketModel } from '../models/basket'
 import { WalletModel } from '../models/wallet'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 import * as utils from '../lib/utils'
 import * as db from '../data/mongodb'
 

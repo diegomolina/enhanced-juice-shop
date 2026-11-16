@@ -1,5 +1,5 @@
 import { type Request, type Response } from 'express'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 export function retrieveLoggedInUser () {
   return (req: Request, res: Response) => {

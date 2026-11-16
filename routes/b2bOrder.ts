@@ -1,18 +1,18 @@
 import vm from 'node:vm'
 import { type Request, type Response, type NextFunction } from 'express'
 // @ts-expect-error
-import { eval as safeEval } from 'notevil'
+import { eval as evaluate } from 'notevil'
 
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 import * as utils from '../lib/utils'
 
 export function b2bOrder () {
   return ({ body }: Request, res: Response, next: NextFunction) => {
     const orderLinesData = body.orderLinesData || ''
     try {
-      const sandbox = { safeEval, orderLinesData }
+      const sandbox = { evaluate, orderLinesData }
       vm.createContext(sandbox)
-      vm.runInContext('safeEval(orderLinesData)', sandbox, { timeout: 2000 })
+      vm.runInContext('evaluate(orderLinesData)', sandbox, { timeout: 2000 })
       res.json({ cid: body.cid, orderNo: uniqueOrderNumber(), paymentDue: dateTwoWeeksFromNow() })
     } catch (err) {
       if (utils.getErrorMessage(err).match(/Script execution timed out.*/) != null) {

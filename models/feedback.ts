@@ -6,7 +6,7 @@ import {
   type CreationOptional,
   type Sequelize
 } from 'sequelize'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 class Feedback extends Model<
 InferAttributes<Feedback>,

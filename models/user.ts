@@ -7,7 +7,7 @@ import {
   type CreationOptional,
   type Sequelize
 } from 'sequelize'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 class User extends Model<
 InferAttributes<User>,
@@ -37,7 +37,7 @@ const UserModelInit = (sequelize: Sequelize) => {
         type: DataTypes.STRING,
         defaultValue: '',
         set (username: string) {
-          username = security.sanitizeLegacy(username)
+          username = security.stripTags(username)
           this.setDataValue('username', username)
         }
       },

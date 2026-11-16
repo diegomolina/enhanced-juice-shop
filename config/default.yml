@@ -57,7 +57,7 @@ application:
   promotion:
     video: owasp_promo.mp4
     subtitles: owasp_promo.vtt
-  easterEggPlanet:
+  planetPage:
     name: Orangeuze
     overlayMap: orangemap2k.avif
   googleOauth:
@@ -227,7 +227,7 @@ products:
       - file: orange_juice-3x.avif
         format: image/avif
         density: 3x
-    urlForProductTamperingChallenge: 'https://www.owasp.org/index.php/O-Saft'
+    infoUrl: 'https://www.owasp.org/index.php/O-Saft'
   -
     name: 'Christmas Super-Surprise-Box (2014 Edition)'
     description: 'Contains a random selection of 10 bottles (each 500ml) of our tastiest juices and an extra fan shirt for an unbeatable price!'
@@ -243,7 +243,7 @@ products:
       - file: undefined-3x.avif
         format: image/avif
         density: 3x
-    useForChristmasSpecialChallenge: true
+    isSeasonalSpecial: true
   -
     name: 'Rippertuer Special Juice'
     description: 'Contains a magical collection of the rarest fruits gathered from all around the world, like Cherymoya Annona cherimola, Jabuticaba Myrciaria cauliflora, Bael Aegle marmelos... and others, at an unbelievable price! <br/><span style="color:red;">This item has been made unavailable because of lack of safety standards.</span>'
@@ -259,7 +259,7 @@ products:
       - file: undefined-3x.avif
         format: image/avif
         density: 3x
-    keywordsForPastebinDataLeakChallenge:
+    ingredientKeywords:
       - hueteroneel
       - eurogium edule
   -
@@ -498,8 +498,8 @@ products:
       - file: 3d_keychain-3x.avif
         format: image/avif
         density: 3x
-    fileForRetrieveBlueprintChallenge: JuiceShop.stl
-    exifForBlueprintChallenge:
+    blueprintFile: JuiceShop.stl
+    blueprintExif:
       - OpenSCAD
   -
     name: 'Juice Shop Artwork'
@@ -1028,13 +1028,13 @@ memories:
   -
     image: 'favorite-hiking-place.png'
     caption: 'I love going hiking here...'
-    geoStalkingMetaSecurityQuestion: 14
-    geoStalkingMetaSecurityAnswer: 'Daniel Boone National Forest'
+    primarySecurityQuestion: 14
+    primarySecurityAnswer: 'Daniel Boone National Forest'
   -
     image: 'IMG_4253.jpg'
     caption: 'My old workplace...'
-    geoStalkingVisualSecurityQuestion: 10
-    geoStalkingVisualSecurityAnswer: 'ITsec'
+    secondarySecurityQuestion: 10
+    secondarySecurityAnswer: 'ITsec'
   -
     image: 'BeeHaven.png'
     caption: 'Welcome to the Bee Haven (/#/bee-haven)🐝'

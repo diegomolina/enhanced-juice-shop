@@ -7,15 +7,15 @@ import type { Memory as MemoryConfig, Product as ProductConfig } from '../config
 import logger from '../logger'
 
 const specialProducts = [
-  { name: 'seasonal special product', key: 'useForChristmasSpecialChallenge', extra: null },
-  { name: 'external link product', key: 'urlForProductTamperingChallenge', extra: null },
-  { name: 'blueprint product', key: 'fileForRetrieveBlueprintChallenge', extra: { key: 'exifForBlueprintChallenge', name: 'list of EXIF metadata properties' } },
-  { name: 'discontinued product', key: 'keywordsForPastebinDataLeakChallenge', extra: null }
+  { name: 'seasonal special product', key: 'isSeasonalSpecial', extra: null },
+  { name: 'external link product', key: 'infoUrl', extra: null },
+  { name: 'blueprint product', key: 'blueprintFile', extra: { key: 'blueprintExif', name: 'list of EXIF metadata properties' } },
+  { name: 'discontinued product', key: 'ingredientKeywords', extra: null }
 ] as const
 
 const specialMemories = [
-  { name: 'first security question memory', user: 'john', keys: ['geoStalkingMetaSecurityQuestion', 'geoStalkingMetaSecurityAnswer'] },
-  { name: 'second security question memory', user: 'emma', keys: ['geoStalkingVisualSecurityQuestion', 'geoStalkingVisualSecurityAnswer'] }
+  { name: 'first security question memory', user: 'john', keys: ['primarySecurityQuestion', 'primarySecurityAnswer'] },
+  { name: 'second security question memory', user: 'emma', keys: ['secondarySecurityQuestion', 'secondarySecurityAnswer'] }
 ] as const
 
 const validateConfig = async ({ products, memories, exitOnFailure = true }: { products?: ProductConfig[], memories?: MemoryConfig[], exitOnFailure: boolean }) => {

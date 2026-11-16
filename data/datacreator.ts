@@ -23,7 +23,7 @@ import type { StaticUser, StaticUserAddress, StaticUserCard, StaticUserPasskey }
 import { loadStaticDeliveryData, loadStaticUserData, loadStaticSecurityQuestionsData } from './staticData'
 import { ordersCollection, reviewsCollection } from './mongodb'
 import * as datacache from './datacache'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 export default async () => {
   const creators = [
@@ -227,12 +227,12 @@ async function createMemories () {
         tmpImageFileName = utils.extractFilename(memory.image)
         void utils.downloadToFile(imageUrl, 'frontend/dist/frontend/assets/public/images/uploads/' + tmpImageFileName)
       }
-      if (memory.geoStalkingMetaSecurityQuestion && memory.geoStalkingMetaSecurityAnswer) {
-        await createSecurityAnswer(datacache.users.john.id, memory.geoStalkingMetaSecurityQuestion, memory.geoStalkingMetaSecurityAnswer)
+      if (memory.primarySecurityQuestion && memory.primarySecurityAnswer) {
+        await createSecurityAnswer(datacache.users.john.id, memory.primarySecurityQuestion, memory.primarySecurityAnswer)
         memory.user = 'john'
       }
-      if (memory.geoStalkingVisualSecurityQuestion && memory.geoStalkingVisualSecurityAnswer) {
-        await createSecurityAnswer(datacache.users.emma.id, memory.geoStalkingVisualSecurityQuestion, memory.geoStalkingVisualSecurityAnswer)
+      if (memory.secondarySecurityQuestion && memory.secondarySecurityAnswer) {
+        await createSecurityAnswer(datacache.users.emma.id, memory.secondarySecurityQuestion, memory.secondarySecurityAnswer)
         memory.user = 'emma'
       }
       if (!memory.user) {
@@ -273,25 +273,25 @@ async function createProducts () {
     return product
   })
 
-  const christmasChallengeProduct = products.find(({ useForChristmasSpecialChallenge }) => useForChristmasSpecialChallenge)
-  const pastebinLeakChallengeProduct = products.find(({ keywordsForPastebinDataLeakChallenge }) => keywordsForPastebinDataLeakChallenge)
-  const tamperingChallengeProduct = products.find(({ urlForProductTamperingChallenge }) => urlForProductTamperingChallenge)
-  const blueprintRetrievalChallengeProduct = products.find(({ fileForRetrieveBlueprintChallenge }) => fileForRetrieveBlueprintChallenge)
+  const seasonalProduct = products.find(({ isSeasonalSpecial }) => isSeasonalSpecial)
+  const discontinuedProduct = products.find(({ ingredientKeywords }) => ingredientKeywords)
+  const externalLinkProduct = products.find(({ infoUrl }) => infoUrl)
+  const blueprintProduct = products.find(({ blueprintFile }) => blueprintFile)
 
-  if (christmasChallengeProduct) {
-    christmasChallengeProduct.description += ' (Seasonal special offer! Limited availability!)'
-    christmasChallengeProduct.deletedDate = '2014-12-27 00:00:00.000 +00:00'
+  if (seasonalProduct) {
+    seasonalProduct.description += ' (Seasonal special offer! Limited availability!)'
+    seasonalProduct.deletedDate = '2014-12-27 00:00:00.000 +00:00'
   }
-  if (tamperingChallengeProduct) {
-    tamperingChallengeProduct.description += ' <a href="' + tamperingChallengeProduct.urlForProductTamperingChallenge + '" target="_blank">More...</a>'
-    delete tamperingChallengeProduct.deletedDate
+  if (externalLinkProduct) {
+    externalLinkProduct.description += ' <a href="' + externalLinkProduct.infoUrl + '" target="_blank">More...</a>'
+    delete externalLinkProduct.deletedDate
   }
-  if (pastebinLeakChallengeProduct) {
-    pastebinLeakChallengeProduct.description += ' (This product is unsafe! We plan to remove it from the stock!)'
-    pastebinLeakChallengeProduct.deletedDate = '2019-02-1 00:00:00.000 +00:00'
+  if (discontinuedProduct) {
+    discontinuedProduct.description += ' (This product is unsafe! We plan to remove it from the stock!)'
+    discontinuedProduct.deletedDate = '2019-02-1 00:00:00.000 +00:00'
   }
-  if (blueprintRetrievalChallengeProduct) {
-    let blueprint = blueprintRetrievalChallengeProduct.fileForRetrieveBlueprintChallenge!
+  if (blueprintProduct) {
+    let blueprint = blueprintProduct.blueprintFile!
     if (utils.isUrl(blueprint)) {
       const blueprintUrl = blueprint
       blueprint = utils.extractFilename(blueprint)
@@ -301,7 +301,7 @@ async function createProducts () {
 
   return await Promise.all(
     products.map(
-      async ({ reviews = [], useForChristmasSpecialChallenge = false, urlForProductTamperingChallenge = false, fileForRetrieveBlueprintChallenge = false, deletedDate = false, ...product }) =>
+      async ({ reviews = [], isSeasonalSpecial = false, infoUrl = false, blueprintFile = false, deletedDate = false, ...product }) =>
         await ProductModel.create({
           name: product.name,
           description: product.description,

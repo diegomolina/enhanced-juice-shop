@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from 'express'
 import { UserModel } from '../models/user'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 export function changePassword () {
   return async ({ query, headers, connection }: Request, res: Response, next: NextFunction) => {

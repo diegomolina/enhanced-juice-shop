@@ -8,7 +8,7 @@ import { AllHtmlEntities as Entities } from 'html-entities'
 import { SecurityQuestionModel } from '../models/securityQuestion'
 import { PrivacyRequestModel } from '../models/privacyRequests'
 import { SecurityAnswerModel } from '../models/securityAnswer'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 import { UserModel } from '../models/user'
 
 const entities = new Entities()

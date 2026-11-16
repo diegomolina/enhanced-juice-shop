@@ -15,7 +15,7 @@ import { COSEALG, isoBase64URL, isoUint8Array } from '@simplewebauthn/server/hel
 import { PasskeyModel } from '../models/passkey'
 import { BasketModel } from '../models/basket'
 import { UserModel } from '../models/user'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 import * as utils from '../lib/utils'
 
 function relyingParty (req: Request) {

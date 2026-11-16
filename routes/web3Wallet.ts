@@ -8,7 +8,7 @@ const web3WalletAddress = '0x413744D59d31AFDC2889aeE602636177805Bd7b0'
 const walletsConnected = new Set()
 let isEventListenerCreated = false
 
-export function contractExploitListener () {
+export function contractEventListener () {
   return async (req: Request, res: Response) => {
     const metamaskAddress = req.body.walletAddress
     walletsConnected.add(metamaskAddress)
@@ -21,9 +21,9 @@ export function contractExploitListener () {
           isEventListenerCreated = false
         }
         const contract = new Contract(web3WalletAddress, web3WalletABI, provider as any)
-        void contract.on('ContractExploited', (exploiter: string) => {
-          if (walletsConnected.has(exploiter)) {
-            walletsConnected.delete(exploiter)
+        void contract.on('ContractExploited', (sender: string) => {
+          if (walletsConnected.has(sender)) {
+            walletsConnected.delete(sender)
           }
         })
         isEventListenerCreated = true

@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { type Request, type Response, type NextFunction } from 'express'
 
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 export function servePublicFiles () {
   return ({ params, query }: Request, res: Response, next: NextFunction) => {
@@ -17,7 +17,7 @@ export function servePublicFiles () {
 
   function verify (file: string, res: Response, next: NextFunction) {
     if (file && (endsWithAllowlistedFileType(file) || (file === 'incident-support.kdbx'))) {
-      file = security.cutOffPoisonNullByte(file)
+      file = security.truncateAtNullChar(file)
 
       res.sendFile(path.resolve('ftp/', file))
     } else {

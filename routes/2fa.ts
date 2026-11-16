@@ -3,7 +3,7 @@ import { BasketModel } from '../models/basket'
 import { UserModel } from '../models/user'
 import * as utils from '../lib/utils'
 import { generateSecret, verifySync } from 'otplib'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 export async function verify (req: Request, res: Response) {
   const { tmpToken, totpToken } = req.body

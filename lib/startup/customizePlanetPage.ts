@@ -1,9 +1,9 @@
 import config from 'config'
 import * as utils from '../utils'
 
-const customizeEasterEgg = async () => {
-  if (config.has('application.easterEggPlanet.overlayMap')) {
-    let overlay: string = config.get('application.easterEggPlanet.overlayMap')
+const customizePlanetPage = async () => {
+  if (config.has('application.planetPage.overlayMap')) {
+    let overlay: string = config.get('application.planetPage.overlayMap')
     if (utils.isUrl(overlay)) {
       const overlayPath = overlay
       overlay = utils.extractFilename(overlay)
@@ -11,7 +11,7 @@ const customizeEasterEgg = async () => {
     }
     replaceImagePath(overlay)
   }
-  if (config.has('application.easterEggPlanet.name')) {
+  if (config.has('application.planetPage.name')) {
     replaceThreeJsTitleTag()
   }
 }
@@ -22,8 +22,8 @@ const replaceImagePath = (overlay: string) => {
 }
 
 const replaceThreeJsTitleTag = () => {
-  const threeJsTitleTag = '<title>Welcome to Planet ' + config.get<string>('application.easterEggPlanet.name') + '</title>'
+  const threeJsTitleTag = '<title>Welcome to Planet ' + config.get<string>('application.planetPage.name') + '</title>'
   utils.replaceInFile('frontend/dist/frontend/assets/private/threejs-demo.html', /<title>.*<\/title>/, threeJsTitleTag)
 }
 
-export default customizeEasterEgg
+export default customizePlanetPage

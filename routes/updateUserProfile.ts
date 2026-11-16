@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from 'express'
 
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 import { UserModel } from '../models/user'
 import * as utils from '../lib/utils'
 

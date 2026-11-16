@@ -4,7 +4,7 @@ import config from 'config'
 import fs from 'node:fs/promises'
 
 import { themes } from '../views/themes/themes'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 import { UserModel } from '../models/user'
 import * as utils from '../lib/utils'
 

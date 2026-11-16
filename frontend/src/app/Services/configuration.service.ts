@@ -62,7 +62,7 @@ export interface Config {
       video: string
       subtitles: string
     }
-    easterEggPlanet: {
+    planetPage: {
       name: string
       overlayMap: string
     }

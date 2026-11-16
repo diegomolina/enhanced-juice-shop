@@ -44,11 +44,11 @@ import { SecurityQuestionModel } from './models/securityQuestion'
 
 import logger from './lib/logger'
 import * as utils from './lib/utils'
-import * as security from './lib/insecurity'
+import * as security from './lib/security'
 import { customizeTerraformContent } from './lib/terraformCustomization'
 import validateConfig from './lib/startup/validateConfig'
 import cleanupFtpFolder from './lib/startup/cleanupFtpFolder'
-import customizeEasterEgg from './lib/startup/customizeEasterEgg'
+import customizePlanetPage from './lib/startup/customizePlanetPage'
 import customizeApplication from './lib/startup/customizeApplication'
 import validatePreconditions, { preconditionsReady } from './lib/startup/validatePreconditions'
 import restoreOverwrittenFilesWithOriginals from './lib/startup/restoreOverwrittenFilesWithOriginals'
@@ -77,7 +77,7 @@ import { saveLoginIp } from './routes/saveLoginIp'
 import { serveKeyFiles } from './routes/keyServer'
 import * as basketItems from './routes/basketItems'
 import { performRedirect } from './routes/redirect'
-import { serveEasterEgg } from './routes/easterEgg'
+import { servePlanetPage } from './routes/planetPage'
 import { getLanguageList } from './routes/languages'
 import { getUserProfile } from './routes/userProfile'
 import { serveAngularClient } from './routes/angular'
@@ -93,7 +93,7 @@ import { retrieveLoggedInUser } from './routes/currentUser'
 import authenticatedUsers from './routes/authenticatedUsers'
 import { securityQuestion } from './routes/securityQuestion'
 import { servePremiumContent } from './routes/premiumReward'
-import { contractExploitListener } from './routes/web3Wallet'
+import { contractEventListener } from './routes/web3Wallet'
 import { updateUserProfile } from './routes/updateUserProfile'
 import { getVideo, promotionVideo } from './routes/videoHandler'
 import { likeProductReviews } from './routes/likeProductReviews'
@@ -104,7 +104,7 @@ import { createProductReviews } from './routes/createProductReviews'
 import { getWalletBalance, addWalletBalance } from './routes/wallet'
 import { retrieveAppConfiguration } from './routes/appConfiguration'
 import { updateProductReviews } from './routes/updateProductReviews'
-import { servePrivacyPolicyProof } from './routes/privacyPolicyProof'
+import { serveThankYouImage } from './routes/thankYouImage'
 import { profileImageUrlUpload } from './routes/profileImageUrlUpload'
 import { profileImageFileUpload } from './routes/profileImageFileUpload'
 import { imageCaptchas, verifyImageCaptcha } from './routes/imageCaptcha'
@@ -508,13 +508,13 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.get('/rest/web3/nftUnlocked', nftUnlocked())
   app.get('/rest/web3/nftMintListen', utils.asyncHandler(nftMintListener()))
   app.post('/rest/web3/walletNFTVerify', walletNFTVerify())
-  app.post('/rest/web3/walletExploitAddress', utils.asyncHandler(contractExploitListener()))
+  app.post('/rest/web3/walletExploitAddress', utils.asyncHandler(contractEventListener()))
 
   app.post('/b2b/v2/orders', b2bOrder())
 
-  app.get('/the/devs/are/so/funny/they/hid/an/easter/egg/within/the/easter/egg', serveEasterEgg())
+  app.get('/the/devs/are/so/funny/they/hid/an/easter/egg/within/the/easter/egg', servePlanetPage())
   app.get('/this/page/is/hidden/behind/an/incredibly/high/paywall/that/could/only/be/unlocked/by/sending/1btc/to/us', servePremiumContent())
-  app.get('/we/may/also/instruct/you/to/refuse/all/reasonably/necessary/responsibility', servePrivacyPolicyProof())
+  app.get('/we/may/also/instruct/you/to/refuse/all/reasonably/necessary/responsibility', serveThankYouImage())
 
   app.use('/dataerasure', dataErasure)
 
@@ -605,7 +605,7 @@ export async function start (readyCallback?: () => void) {
   })
 
   void collectDurationPromise('customizeApplication', customizeApplication)()
-  void collectDurationPromise('customizeEasterEgg', customizeEasterEgg)()
+  void collectDurationPromise('customizePlanetPage', customizePlanetPage)()
 }
 
 export function close (exitCode: number | undefined) {

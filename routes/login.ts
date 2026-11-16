@@ -1,7 +1,7 @@
 import { type Request, type Response, type NextFunction } from 'express'
 
 import { BasketModel } from '../models/basket'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 import { UserModel } from '../models/user'
 import * as models from '../models/index'
 import { type User } from '../data/types'

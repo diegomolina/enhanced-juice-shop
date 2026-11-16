@@ -4,7 +4,7 @@ import fileType from 'file-type'
 
 import logger from '../lib/logger'
 import { UserModel } from '../models/user'
-import * as security from '../lib/insecurity'
+import * as security from '../lib/security'
 
 export function profileImageFileUpload () {
   return async (req: Request, res: Response, next: NextFunction) => {
