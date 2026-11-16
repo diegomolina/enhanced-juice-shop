@@ -2,23 +2,7 @@
   "name": "juice-shop",
   "version": "20.4.0-SNAPSHOT",
   "private": true,
-  "description": "Probably the most modern and sophisticated insecure web application",
-  "keywords": [
-    "web security",
-    "web application security",
-    "webappsec",
-    "owasp",
-    "pentest",
-    "pentesting",
-    "security",
-    "vulnerable",
-    "vulnerability",
-    "broken",
-    "bodgeit",
-    "ctf",
-    "capture the flag",
-    "awareness"
-  ],
+  "description": "Online juice store web application",
   "homepage": "https://owasp-juice.shop",
   "bugs": {
     "url": "https://github.com/juice-shop/juice-shop/issues"
@@ -60,7 +44,6 @@
     "serve": "concurrently --kill-others \"tsx app.ts\" \"cd frontend && npm run start\"",
     "serve:dev": "concurrently --kill-others \"tsx watch app.ts\" \"cd frontend && npm run start\"",
     "start": "node build/app",
-    "vagrant": "cd vagrant && vagrant up",
     "sbom": "cyclonedx-npm --omit=dev --output-format=JSON --output-file=bom.json"
   },
   "dependencies": {

@@ -15,14 +15,11 @@ i18n/*.invalid
 /data/juiceshop.sqlite-journal
 
 # Build
-.nyc_output/
 .sass-cache/
 build/
 cache/
-coverage/
 dist/
 logs/
-vagrant/.vagrant/
 *.orig
 *.out
 *.log
@@ -40,9 +37,6 @@ out/
 *.iml
 *.iws
 *.swp
-.ai/mcp/mcp.json
-.junie/memory/
-.junie/plans/
 
 # Branch ghpages
 assets/
@@ -50,24 +44,10 @@ assets/
 
 # Custom configuration files
 config/*.yml
-!config/addo.yml
-!config/bodgeit.yml
-!config/ctf.yml
-!config/fbctf.yml
 !config/default.yml
-!config/juicebox.yml
-!config/quiet.yml
-!config/test.yml
-!config/7ms.yml
-!config/mozilla.yml
-!config/unsafe.yml
-!config/tutorial.yml
-!config/oss.yml
-!config/defcon33.yml
 
 # System Files
 .DS_Store
 
 # Misc
 .playwright-mcp/
-cypress/screenshots/
