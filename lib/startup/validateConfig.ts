@@ -12,15 +12,15 @@ import type { Memory as MemoryConfig, Product as ProductConfig } from '../config
 import logger from '../logger'
 
 const specialProducts = [
-  { name: '"Christmas Special" challenge product', key: 'useForChristmasSpecialChallenge', extra: null },
-  { name: '"Product Tampering" challenge product', key: 'urlForProductTamperingChallenge', extra: null },
-  { name: '"Retrieve Blueprint" challenge product', key: 'fileForRetrieveBlueprintChallenge', extra: { key: 'exifForBlueprintChallenge', name: 'list of EXIF metadata properties' } },
-  { name: '"Leaked Unsafe Product" challenge product', key: 'keywordsForPastebinDataLeakChallenge', extra: null }
+  { name: 'seasonal special product', key: 'useForChristmasSpecialChallenge', extra: null },
+  { name: 'external link product', key: 'urlForProductTamperingChallenge', extra: null },
+  { name: 'blueprint product', key: 'fileForRetrieveBlueprintChallenge', extra: { key: 'exifForBlueprintChallenge', name: 'list of EXIF metadata properties' } },
+  { name: 'discontinued product', key: 'keywordsForPastebinDataLeakChallenge', extra: null }
 ] as const
 
 const specialMemories = [
-  { name: '"Meta Geo Stalking" challenge memory', user: 'john', keys: ['geoStalkingMetaSecurityQuestion', 'geoStalkingMetaSecurityAnswer'] },
-  { name: '"Visual Geo Stalking" challenge memory', user: 'emma', keys: ['geoStalkingVisualSecurityQuestion', 'geoStalkingVisualSecurityAnswer'] }
+  { name: 'first security question memory', user: 'john', keys: ['geoStalkingMetaSecurityQuestion', 'geoStalkingMetaSecurityAnswer'] },
+  { name: 'second security question memory', user: 'emma', keys: ['geoStalkingVisualSecurityQuestion', 'geoStalkingVisualSecurityAnswer'] }
 ] as const
 
 const validateConfig = async ({ products, memories, exitOnFailure = true }: { products?: ProductConfig[], memories?: MemoryConfig[], exitOnFailure: boolean }) => {
@@ -37,12 +37,10 @@ const validateConfig = async ({ products, memories, exitOnFailure = true }: { pr
   success = checkUnambiguousMandatorySpecialMemories(memories) && success
   success = checkUniqueSpecialOnMemories(memories) && success
   success = checkSpecialMemoriesHaveNoUserAssociated(memories) && success
-  success = checkForIllogicalCombos() && success
   if (success) {
     logger.info(`Configuration ${colors.bold(process.env.NODE_ENV ?? 'default')} validated (${colors.green('SUCCESS')})`)
   } else {
     logger.warn(`Configuration ${colors.bold(process.env.NODE_ENV ?? 'default')} validated (${colors.red('ERROR')})`)
-    logger.warn(`Visit ${colors.yellow('https://pwning.owasp-juice.shop/companion-guide/latest/part4/customization.html#_yaml_configuration_file')} for the configuration schema definition.`)
     if (exitOnFailure) {
       logger.error(colors.red('Exiting due to configuration errors!'))
       process.exit(1)
@@ -105,7 +103,7 @@ export const checkUniqueSpecialOnProducts = (products: ProductConfig[]) => {
   products.forEach((product) => {
     const appliedSpecials = specialProducts.filter(({ key }) => product[key])
     if (appliedSpecials.length > 1) {
-      logger.warn(`Product ${colors.italic(product.name)} is used as ${appliedSpecials.map(({ name }) => `${colors.italic(name)}`).join(' and ')} but can only be used for one challenge (${colors.red('ERROR')})`)
+      logger.warn(`Product ${colors.italic(product.name)} is used as ${appliedSpecials.map(({ name }) => `${colors.italic(name)}`).join(' and ')} but can only be used for one purpose (${colors.red('ERROR')})`)
       success = false
     }
   })
@@ -153,34 +151,10 @@ export const checkUniqueSpecialOnMemories = (memories: MemoryConfig[]) => {
   memories.forEach((memory) => {
     const appliedSpecials = specialMemories.filter(({ keys }) => memory[keys[0]] && memory[keys[1]])
     if (appliedSpecials.length > 1) {
-      logger.warn(`Memory ${colors.italic(memory.caption)} is used as ${appliedSpecials.map(({ name }) => `${colors.italic(name)}`).join(' and ')} but can only be used for one challenge (${colors.red('ERROR')})`)
+      logger.warn(`Memory ${colors.italic(memory.caption)} is used as ${appliedSpecials.map(({ name }) => `${colors.italic(name)}`).join(' and ')} but can only be used for one purpose (${colors.red('ERROR')})`)
       success = false
     }
   })
-  return success
-}
-
-export const checkForIllogicalCombos = (configuration = config.util.toObject()) => {
-  let success = true
-  if (configuration.challenges?.restrictToTutorialsFirst && !configuration.hackingInstructor?.isEnabled) {
-    logger.warn(`Restricted tutorial mode is enabled while Hacking Instructor is disabled (${colors.red('ERROR')})`)
-    success = false
-  }
-  if (configuration.ctf?.showFlagsInNotifications && !configuration.challenges?.showSolvedNotifications) {
-    logger.warn(`CTF flags are enabled while challenge solved notifications are disabled (${colors.red('ERROR')})`)
-    success = false
-  }
-  if (['name', 'flag', 'both'].includes(configuration.ctf?.showCountryDetailsInNotifications) && !configuration.ctf?.showFlagsInNotifications) {
-    logger.warn(`CTF country mappings for FBCTF are enabled while CTF flags are disabled (${colors.red('ERROR')})`)
-    success = false
-  }
-  const notifications = configuration.ctf?.systemWideNotifications
-  if (notifications?.url) {
-    if (!notifications.pollFrequencySeconds || typeof notifications.pollFrequencySeconds !== 'number' || notifications.pollFrequencySeconds <= 0) {
-      logger.warn(`ctf.systemWideNotifications.url is set but pollFrequencySeconds is missing or not a positive number (${colors.red('ERROR')})`)
-      success = false
-    }
-  }
   return success
 }
 

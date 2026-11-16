@@ -11,8 +11,6 @@ import yaml from 'js-yaml'
 import unzipper from 'unzipper'
 import { type NextFunction, type Request, type Response } from 'express'
 
-import * as challengeUtils from '../lib/challengeUtils'
-import { challenges } from '../data/datacache'
 import * as utils from '../lib/utils'
 import { parseXmlString } from '../lib/xml'
 
@@ -29,7 +27,6 @@ async function extractZipBuffer (buffer: Buffer) {
   for (const entry of directory.files) {
     const fileName = entry.path
     const absolutePath = path.resolve('uploads/complaints/' + fileName)
-    challengeUtils.solveIf(challenges.fileWriteChallenge, () => { return absolutePath === path.resolve('ftp/legal.md') })
     if (absolutePath.includes(path.resolve('.'))) {
       await pipeline(entry.stream(), fs.createWriteStream('uploads/complaints/' + fileName))
     }
@@ -41,7 +38,7 @@ async function handleZipFileUpload ({ file }: Request, res: Response, next: Next
     next()
     return
   }
-  if (((file?.buffer) != null) && utils.isChallengeEnabled(challenges.fileWriteChallenge)) {
+  if ((file?.buffer) != null) {
     try {
       await extractZipBuffer(file.buffer)
     } catch (err) {
@@ -52,41 +49,20 @@ async function handleZipFileUpload ({ file }: Request, res: Response, next: Next
   res.status(204).end()
 }
 
-function checkUploadSize ({ file }: Request, res: Response, next: NextFunction) {
-  if (file != null) {
-    challengeUtils.solveIf(challenges.uploadSizeChallenge, () => { return file?.size > 100000 })
-  }
-  next()
-}
-
-function checkFileType ({ file }: Request, res: Response, next: NextFunction) {
-  const fileType = file?.originalname.substr(file.originalname.lastIndexOf('.') + 1).toLowerCase()
-  const allowedFileTypes = ['pdf', 'xml', 'zip', 'yml', 'yaml']
-  challengeUtils.solveIf(challenges.uploadTypeChallenge, () => {
-    return !fileType || !allowedFileTypes.includes(fileType)
-  })
-  next()
-}
-
 async function handleXmlUpload ({ file }: Request, res: Response, next: NextFunction) {
   if (!(file?.originalname?.toLowerCase().endsWith('.xml') ?? false)) {
     next()
     return
   }
-  challengeUtils.solveIf(challenges.deprecatedInterfaceChallenge, () => { return true })
-  if (((file?.buffer) != null) && utils.isChallengeEnabled(challenges.deprecatedInterfaceChallenge)) { // XXE attacks in Docker/Heroku containers regularly cause "segfault" crashes
+  if ((file?.buffer) != null) {
     const data = file.buffer.toString()
     try {
       const xmlString = await parseXmlString(data)
-      challengeUtils.solveIf(challenges.xxeFileDisclosureChallenge, () => { return (utils.matchesEtcPasswdFile(xmlString) || utils.matchesSystemIniFile(xmlString)) })
       res.status(410)
       next(new Error('B2B customer complaints via file upload have been deprecated for security reasons: ' + utils.trunc(xmlString, 400) + ' (' + file.originalname + ')'))
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err)
       if (errorMessage.includes('Script execution timed out')) {
-        if (challengeUtils.notSolved(challenges.xxeDosChallenge)) {
-          challengeUtils.solve(challenges.xxeDosChallenge)
-        }
         res.status(503)
         next(new Error('Sorry, we are temporarily not available! Please try again later.'))
       } else {
@@ -105,8 +81,7 @@ function handleYamlUpload ({ file }: Request, res: Response, next: NextFunction)
     res.status(204).end()
     return
   }
-  challengeUtils.solveIf(challenges.deprecatedInterfaceChallenge, () => { return true })
-  if (((file?.buffer) != null) && utils.isChallengeEnabled(challenges.deprecatedInterfaceChallenge)) {
+  if ((file?.buffer) != null) {
     const data = file.buffer.toString()
     try {
       const sandbox = { yaml, data }
@@ -117,9 +92,6 @@ function handleYamlUpload ({ file }: Request, res: Response, next: NextFunction)
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err)
       if (errorMessage.includes('Invalid string length') || errorMessage.includes('Script execution timed out')) {
-        if (challengeUtils.notSolved(challenges.yamlBombChallenge)) {
-          challengeUtils.solve(challenges.yamlBombChallenge)
-        }
         res.status(503)
         next(new Error('Sorry, we are temporarily not available! Please try again later.'))
       } else {
@@ -136,8 +108,6 @@ function handleYamlUpload ({ file }: Request, res: Response, next: NextFunction)
 export {
   ensureFileIsPassed,
   handleZipFileUpload,
-  checkUploadSize,
-  checkFileType,
   handleXmlUpload,
   handleYamlUpload
 }

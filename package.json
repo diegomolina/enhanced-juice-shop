@@ -51,44 +51,17 @@
     "build": "npm run build:frontend && npm run build:server",
     "build:frontend": "cd frontend && npm run build",
     "build:server": "tsc",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
     "postinstall": "cd frontend && npm install && cd .. && npm run build:frontend && (npm run --silent build:server || cd .)",
-    "lint": "eslint *.ts data lib models routes test/**/*.ts views && npm run lint:config && cd frontend && npm run lint && npm run lint:scss && cd ..",
+    "lint": "eslint *.ts data lib models routes views && npm run lint:config && cd frontend && npm run lint && npm run lint:scss && cd ..",
     "lint:config": "tsx lib/scripts/lintConfig.ts",
-    "lint:fix": "eslint *.ts data lib models routes test/**/*.ts views rsn --fix && cd frontend && npm run lint:fix && cd ..",
+    "lint:fix": "eslint *.ts data lib models routes views --fix && cd frontend && npm run lint:fix && cd ..",
     "package": "node scripts/package.mjs",
     "package:ci": "npm prune --production && npm dedupe && cd frontend && npm prune --production && cd .. && npm run --silent sbom && node scripts/package.mjs",
     "serve": "concurrently --kill-others \"tsx app.ts\" \"cd frontend && npm run start\"",
     "serve:dev": "concurrently --kill-others \"tsx watch app.ts\" \"cd frontend && npm run start\"",
     "start": "node build/app",
-    "test": "npm run test:frontend && npm run test:server && npm run test:api",
-    "test:coverage": "npm run test:frontend:coverage && npm run test:server:coverage && npm run test:api:coverage",
-    "test:frontend": "cd frontend && npm run test",
-    "test:frontend:coverage": "cd frontend && npm run test:coverage",
-    "test:server": "node --import ./test/server/helpers/test-env.mjs --import tsx --test --test-force-exit \"test/server/**/*.unit.test.ts\"",
-    "test:server:coverage": "nyc --report-dir=./coverage/server-tests npm run test:server",
-    "test:api": "node --import ./test/api/helpers/test-env.mjs --import tsx --test --test-force-exit \"test/api/**/*.test.ts\"",
-    "test:api:coverage": "nyc --report-dir=./coverage/api-tests npm run test:api",
-    "test:e2e": "npm run cypress:run",
-    "rsn": "node --import tsx rsn/rsn.ts",
-    "rsn:update": "node --import tsx rsn/rsn-update.ts",
     "vagrant": "cd vagrant && vagrant up",
     "sbom": "cyclonedx-npm --omit=dev --output-format=JSON --output-file=bom.json"
-  },
-  "nyc": {
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "all": true,
-    "include": [
-      "lib/*.ts",
-      "models/*.ts",
-      "routes/*.ts",
-      "server.ts"
-    ],
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ]
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^2.0.35",
@@ -137,7 +110,6 @@
     "semver": "^7.6.3",
     "sequelize": "^6.37.3",
     "serve-index": "^1.9.1",
-    "socket.io": "^4.8.4",
     "sqlite3": "^5.1.7",
     "svg-captcha": "^1.4.0",
     "swagger-ui-express": "^5.0.1",
@@ -149,16 +121,13 @@
   "devDependencies": {
     "@cyclonedx/cyclonedx-npm": "^2.0.0||^3.0.0||^4.00",
     "@eslint/js": "^9.33.0",
-    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/clarinet": "^0.12.3",
     "@types/compression": "^1.8.1",
     "@types/config": "^3.3.5",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/cross-spawn": "^6.0.6",
-    "@types/diff": "^7.0.1",
     "@types/errorhandler": "^1.5.3",
-    "@types/exif": "^0.6.5",
     "@types/express": "^4.17.25",
     "@types/express-jwt": "^6.0.4",
     "@types/i18n": "^0.12.0",
@@ -175,19 +144,12 @@
     "@types/semver": "^7.5.8",
     "@types/sequelize": "^4.28.20",
     "@types/serve-index": "^1.9.4",
-    "@types/supertest": "^7.2.0",
     "@types/swagger-ui-express": "^4.1.6",
     "@types/unzipper": "^0.10.10",
     "concurrently": "^5.3.0",
-    "cypress": "^16.2.0",
-    "diff": "^9.0.0",
     "eslint": "^9.39.4",
-    "exif": "^0.6.0",
     "globals": "^17.4.0",
     "neostandard": "^0.13.0",
-    "nyc": "^15.1.0",
-    "socket.io-client": "^4.8.4",
-    "supertest": "^7.2.2",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.57.1"
@@ -212,7 +174,6 @@
   "allowScripts": {
     "sqlite3@5.1.7": true,
     "esbuild@0.28.1": true,
-    "@scarf/scarf": false,
-    "cypress@16.2.0": true
+    "@scarf/scarf": false
   }
 }

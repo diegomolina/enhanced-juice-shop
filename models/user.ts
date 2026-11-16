@@ -12,9 +12,6 @@ import {
   type CreationOptional,
   type Sequelize
 } from 'sequelize'
-import * as challengeUtils from '../lib/challengeUtils'
-import * as utils from '../lib/utils'
-import { challenges } from '../data/datacache'
 import * as security from '../lib/insecurity'
 
 class User extends Model<
@@ -45,11 +42,7 @@ const UserModelInit = (sequelize: Sequelize) => { // vuln-code-snippet start wea
         type: DataTypes.STRING,
         defaultValue: '',
         set (username: string) {
-          if (utils.isChallengeEnabled(challenges.persistedXssUserChallenge)) {
-            username = security.sanitizeLegacy(username)
-          } else {
-            username = security.sanitizeSecure(username)
-          }
+          username = security.sanitizeLegacy(username)
           this.setDataValue('username', username)
         }
       },
@@ -57,13 +50,6 @@ const UserModelInit = (sequelize: Sequelize) => { // vuln-code-snippet start wea
         type: DataTypes.STRING,
         unique: true,
         set (email: string) {
-          if (utils.isChallengeEnabled(challenges.persistedXssUserChallenge)) {
-            challengeUtils.solveIf(challenges.persistedXssUserChallenge, () => {
-              return email?.includes('<iframe src="javascript:alert(`xss`)">') ?? false
-            })
-          } else {
-            email = security.sanitizeSecure(email)
-          }
           this.setDataValue('email', email)
         }
       }, // vuln-code-snippet hide-end
@@ -130,7 +116,7 @@ const UserModelInit = (sequelize: Sequelize) => { // vuln-code-snippet start wea
     ) {
       await Promise.reject(
         new Error(
-          'Nice try, but this is not how the "Ephemeral Accountant" challenge works!'
+          'Registration with this email address is not allowed.'
         )
       )
     }

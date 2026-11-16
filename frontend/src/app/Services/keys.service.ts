@@ -30,15 +30,6 @@ export class KeysService {
     )
   }
 
-  checkNftMinted () {
-    return this.http.get(this.hostServer + '/api/Challenges/?key=nftMintChallenge').pipe(
-      map((response: any) => response),
-      catchError((err) => {
-        throw err
-      })
-    )
-  }
-
   submitKey (privateKey: string) {
     const endpoint = this.host + '/submitKey'
     const params = { privateKey }

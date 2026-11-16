@@ -8,17 +8,9 @@ import fs from 'node:fs'
 import http from 'node:http'
 import https from 'node:https'
 import logger from './logger'
-import config from 'config'
 import { ProxyAgent } from 'proxy-agent'
 import crypto from 'node:crypto'
 import clarinet from 'clarinet'
-import type { Challenge } from '@juice-shop/data/types'
-
-import isHeroku from './is-heroku'
-import isDocker from './is-docker'
-import isWindows from './is-windows'
-export { default as isDocker } from './is-docker'
-export { default as isWindows } from './is-windows'
 
 const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
 const proxyAgent = new ProxyAgent()
@@ -35,14 +27,6 @@ export const queryResultToJson = <T>(
 
 export const isUrl = (url: string) => {
   return url.startsWith('http')
-}
-
-export const containsEscaped = function (str: string, element: string) {
-  return str ? str.includes(element.replace(/"/g, '\\"')) : false
-}
-
-export const containsOrEscaped = function (str: string, element: string) {
-  return (str ? str.includes(element) : false) || containsEscaped(str, element)
 }
 
 export const unquote = function (str: string) {
@@ -65,22 +49,6 @@ export const version = (module?: string) => {
   } else {
     return packageJson.version
   }
-}
-
-let cachedCtfKey: string | undefined
-const getCtfKey = () => {
-  if (!cachedCtfKey) {
-    if (process.env.CTF_KEY !== undefined && process.env.CTF_KEY !== '') {
-      cachedCtfKey = process.env.CTF_KEY
-    } else {
-      const data = fs.readFileSync('ctf.key', 'utf8')
-      cachedCtfKey = data
-    }
-  }
-  return cachedCtfKey
-}
-export const ctfFlag = (text: string) => {
-  return crypto.createHmac('sha1', getCtfKey()).update(text).digest('hex')
 }
 
 export const toMMMYY = (date: Date) => {
@@ -179,50 +147,6 @@ export const randomHexString = (length: number): string => {
   return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length)
 }
 
-export interface ChallengeEnablementStatus {
-  enabled: boolean
-  disabledBecause: string | null
-}
-
-type SafetyModeSetting = 'enabled' | 'disabled' | 'auto'
-
-type isEnvironmentFunction = () => boolean
-
-export function getChallengeEnablementStatus (challenge: Challenge,
-  safetyModeSetting: SafetyModeSetting = config.get<SafetyModeSetting>('challenges.safetyMode'),
-  isEnvironmentFunctions: {
-    isDocker: isEnvironmentFunction
-    isHeroku: isEnvironmentFunction
-    isWindows: isEnvironmentFunction
-  } = { isDocker, isHeroku, isWindows }): ChallengeEnablementStatus {
-  if (!challenge?.disabledEnv) {
-    return { enabled: true, disabledBecause: null }
-  }
-
-  if (safetyModeSetting === 'disabled') {
-    return { enabled: true, disabledBecause: null }
-  }
-
-  if (challenge.disabledEnv?.includes('Docker') && isEnvironmentFunctions.isDocker()) {
-    return { enabled: false, disabledBecause: 'Docker' }
-  }
-  if (challenge.disabledEnv?.includes('Heroku') && isEnvironmentFunctions.isHeroku()) {
-    return { enabled: false, disabledBecause: 'Heroku' }
-  }
-  if (challenge.disabledEnv?.includes('Windows') && isEnvironmentFunctions.isWindows()) {
-    return { enabled: false, disabledBecause: 'Windows' }
-  }
-  if (challenge.disabledEnv && safetyModeSetting === 'enabled') {
-    return { enabled: false, disabledBecause: 'Safety Mode' }
-  }
-
-  return { enabled: true, disabledBecause: null }
-}
-export function isChallengeEnabled (challenge: Challenge): boolean {
-  const { enabled } = getChallengeEnablementStatus(challenge)
-  return enabled
-}
-
 export const parseJsonCustom = (jsonString: string) => {
   const parser = clarinet.parser()
   const result: any[] = []
@@ -252,43 +176,6 @@ export const getErrorMessage = (error: unknown) => {
   return String(error)
 }
 
-export const matchesSystemIniFile = (text: string) => {
-  const match = text.match(/; for 16-bit app support/gi)
-  return match !== null && match.length >= 1
-}
-
-export const matchesEtcPasswdFile = (text: string) => {
-  const match = text.match(/(\w*:\w*:\d*:\d*:\w*:.*)|(Note that this file is consulted directly)/gi)
-  return match !== null && match.length >= 1
-}
-
-export function diceCoefficient (s1: string, s2: string, n = 2): number {
-  if (s1 === s2) return 1
-  if (s1.length < n || s2.length < n) return 0
-
-  const nGrams1 = new Map<string, number>()
-  for (let i = 0; i <= s1.length - n; i++) {
-    const nGram = s1.substring(i, i + n)
-    nGrams1.set(nGram, (nGrams1.get(nGram) ?? 0) + 1)
-  }
-
-  let intersectionSize = 0
-  for (let i = 0; i <= s2.length - n; i++) {
-    const nGram = s2.substring(i, i + n)
-    const count = nGrams1.get(nGram) ?? 0
-    if (count > 0) {
-      nGrams1.set(nGram, count - 1)
-      intersectionSize++
-    }
-  }
-
-  return (2.0 * intersectionSize) / (s1.length + s2.length - 2 * (n - 1))
-}
-
-/**
- * Wrapper for asynchronous Express route handlers to ensure any rejected promises are caught and passed to the next() function.
- * TODO: Revisit the need for this wrapper once the project is migrated to Express 5 which supports async handlers natively.
- */
 export const asyncHandler = (fn: (req: any, res: any, next: any) => Promise<any> | any) => (req: any, res: any, next: any) => {
   void Promise.resolve(fn(req, res, next)).catch(next)
 }

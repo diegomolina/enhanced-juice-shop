@@ -17,7 +17,6 @@ export default [
       'app/private/**',
       'vagrant/**',
       'frontend/**',
-      'data/static/codefixes/**',
       'dist/**',
       'build/**',
       'node_modules/**'
@@ -29,8 +28,6 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...globals.vitest,
-        ...globals.jest,
         Atomics: 'readonly',
         SharedArrayBuffer: 'readonly'
       }

@@ -10,7 +10,6 @@ import { CookieService } from 'ngy-cookie'
 import { TranslateModule } from '@ngx-translate/core'
 
 import { MatIconModule } from '@angular/material/icon'
-import { MatTooltip } from '@angular/material/tooltip'
 import { MatButtonModule } from '@angular/material/button'
 
 @Component({
@@ -18,7 +17,7 @@ import { MatButtonModule } from '@angular/material/button'
   selector: 'app-welcome-banner',
   templateUrl: 'welcome-banner.component.html',
   styleUrls: ['./welcome-banner.component.scss'],
-  imports: [MatButtonModule, MatTooltip, MatIconModule, TranslateModule]
+  imports: [MatButtonModule, MatIconModule, TranslateModule]
 })
 export class WelcomeBannerComponent implements OnInit {
   dialogRef = inject<MatDialogRef<WelcomeBannerComponent>>(MatDialogRef)
@@ -26,9 +25,7 @@ export class WelcomeBannerComponent implements OnInit {
   private readonly cookieService = inject(CookieService)
 
   public title = 'Welcome to OWASP Juice Shop'
-  public message = "<p>Being a web application with a vast number of intended security vulnerabilities, the <strong>OWASP Juice Shop</strong> is supposed to be the opposite of a best practice or template application for web developers: It is an awareness, training, demonstration and exercise tool for security risks in modern web applications. The <strong>OWASP Juice Shop</strong> is an open-source project hosted by the non-profit <a href='https://owasp.org' target='_blank'>Open Worldwide Application Security Project (OWASP)</a> and is developed and maintained by volunteers. Check out the link below for more information and documentation on the project.</p><h1><a href='https://owasp-juice.shop' target='_blank'>https://owasp-juice.shop</a></h1>"
-  public showHackingInstructor = true
-  public showDismissBtn = true
+  public message = "<p>Welcome to our online juice store! Browse our selection of fresh juices, smoothies and merchandise, add your favorites to the basket and enjoy fast delivery right to your door.</p>"
 
   private readonly welcomeBannerStatusCookieKey = 'welcomebanner_status'
 
@@ -39,26 +36,8 @@ export class WelcomeBannerComponent implements OnInit {
           this.title = config.application.welcomeBanner.title
           this.message = config.application.welcomeBanner.message
         }
-        this.showHackingInstructor = config?.hackingInstructor?.isEnabled
-        // Don't allow to skip the tutorials when restrictToTutorialsFirst and showHackingInstructor are enabled
-        if (this.showHackingInstructor && config?.challenges?.restrictToTutorialsFirst) {
-          this.dialogRef.disableClose = true
-          this.showDismissBtn = false
-        }
       },
       error: (err) => { console.log(err) }
-    })
-  }
-
-  startHackingInstructor () {
-    this.closeWelcome()
-    console.log('Starting instructions for challenge "Score Board"')
-    this.launchHackingInstructor('Score Board')
-  }
-
-  protected launchHackingInstructor (challengeName: string) {
-    import('../../hacking-instructor').then(module => {
-      module.startHackingInstructorFor(challengeName)
     })
   }
 

@@ -46,7 +46,6 @@ export class WalletWeb3Component implements OnInit {
   inputAmount: number = null
   successResponse = false
   mintButtonDisabled = true
-  challengeSolved = false
   errorMessage = ''
   metamaskAddress = ''
   ngOnInit (): void {

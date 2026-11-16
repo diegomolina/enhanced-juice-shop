@@ -40,7 +40,6 @@ import { PhotoWallComponent } from './photo-wall/photo-wall.component'
 import { DeluxeUserComponent } from './deluxe-user/deluxe-user.component'
 import { AccountingGuard, AdminGuard, LoginGuard } from './app.guard'
 import { NFTUnlockComponent } from './nft-unlock/nft-unlock.component'
-import { ScoreBoardComponent } from './score-board/score-board.component'
 import { ChatbotComponent } from './chatbot/chatbot.component'
 import { ChatWelcomePageComponent } from './chatbot/chat-welcome-page/chat-welcome-page.component'
 import { ChatConversationComponent } from './chatbot/chat-conversation/chat-conversation.component'
@@ -57,11 +56,6 @@ const loadWeb3WalletModule = async () => {
 const loadWeb3SandboxModule = async () => {
   const module = await import('./web3-sandbox/web3-sandbox.module')
   return module.Web3SandboxModule
-}
-
-const loadCodingChallenge = async () => {
-  const module = await import('./coding-challenge-page/coding-challenge-page.component')
-  return module.CodingChallengePageComponent
 }
 
 const loadRecycleComponent = async () => {
@@ -180,14 +174,6 @@ const routes: Routes = [
     component: SearchResultComponent
   },
   {
-    path: 'hacking-instructor',
-    component: SearchResultComponent
-  },
-  { // vuln-code-snippet neutral-line scoreBoardChallenge
-    path: 'score-board', // vuln-code-snippet vuln-line scoreBoardChallenge
-    component: ScoreBoardComponent // vuln-code-snippet neutral-line scoreBoardChallenge
-  }, // vuln-code-snippet neutral-line scoreBoardChallenge
-  {
     path: 'track-result',
     component: TrackResultComponent
   },
@@ -267,10 +253,6 @@ const routes: Routes = [
     matcher: tokenMatcher, // vuln-code-snippet vuln-line tokenSaleChallenge
     component: TokenSaleComponent // vuln-code-snippet neutral-line tokenSaleChallenge
   }, // vuln-code-snippet neutral-line tokenSaleChallenge
-  {
-    path: 'coding-challenge/:challengeKey',
-    loadComponent: async () => await loadCodingChallenge()
-  },
   {
     path: '403',
     component: ErrorPageComponent

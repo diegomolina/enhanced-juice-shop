@@ -40,8 +40,6 @@
             ],
             "allowedCommonJsDependencies": [
 
-              "socket.io-client",
-              "socket.io-parser",
               "debug",
               "bn.js",
               "aes-js",
@@ -108,29 +106,11 @@
             "buildTarget": "frontend:build"
           }
         },
-        "test": {
-          "builder": "@angular/build:unit-test",
-          "options": {
-            "tsConfig": "src/tsconfig.spec.json",
-            "setupFiles": ["src/test-setup.ts"],
-            "runnerConfig": true,
-            "watch": false,
-            "coverage": false,
-            "coverageExclude": ["src/hacking-instructor/**/*"]
-          },
-          "configurations": {
-            "coverage": {
-              "coverage": true,
-              "coverageReporters": ["lcovonly", "html"]
-            }
-          }
-        },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "src/app/**/*.ts",
-              "src/hacking-instructor/**/*.ts"
+              "src/app/**/*.ts"
             ]
           }
         }

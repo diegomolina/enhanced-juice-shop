@@ -20,9 +20,6 @@ import { COSEALG, isoBase64URL, isoUint8Array } from '@simplewebauthn/server/hel
 import { PasskeyModel } from '../models/passkey'
 import { BasketModel } from '../models/basket'
 import { UserModel } from '../models/user'
-import * as challengeUtils from '../lib/challengeUtils'
-import { challenges, users } from '../data/datacache'
-import { loadStaticUserData, type StaticUserPasskey } from '../data/staticData'
 import * as security from '../lib/insecurity'
 import * as utils from '../lib/utils'
 
@@ -213,8 +210,6 @@ export async function loginVerify (req: Request, res: Response) {
     return
   }
 
-  challengeUtils.solveIf(challenges.passkeySignatureChallenge, () => { return user.id === users.passkeyUser.id && !verification.verified }) // vuln-code-snippet hide-line
-  await solvePasskeyHijack(user, passkey, verification.verified) // vuln-code-snippet hide-line
   if (verification.verified) { // vuln-code-snippet neutral-line passkeySignatureChallenge
     passkey.counter = verification.authenticationInfo.newCounter // vuln-code-snippet neutral-line passkeySignatureChallenge
     await passkey.save() // vuln-code-snippet neutral-line passkeySignatureChallenge
@@ -222,18 +217,6 @@ export async function loginVerify (req: Request, res: Response) {
   await issuePasskeySession(user, res) // vuln-code-snippet vuln-line passkeySignatureChallenge
 }
 // vuln-code-snippet end passkeySignatureChallenge
-
-let seededPasskeys: Promise<StaticUserPasskey[]> | undefined
-
-// Only counts when a seeded credential ID now carries a different public key, i.e. it was overwritten.
-async function solvePasskeyHijack (user: UserModel, passkey: PasskeyModel, verified: boolean) {
-  if (!verified || user.id !== users.passkeyUser.id || !challengeUtils.notSolved(challenges.passkeyCredentialOverwriteChallenge)) return
-  seededPasskeys ??= loadStaticUserData().then((staticUsers) => staticUsers.find(({ key }) => key === 'passkeyUser')?.passkeys ?? [])
-  const seeded = await seededPasskeys
-  challengeUtils.solveIf(challenges.passkeyCredentialOverwriteChallenge, () => {
-    return seeded.some(({ credentialID, publicKey }) => credentialID === passkey.credentialID && publicKey !== passkey.publicKey)
-  })
-}
 
 /**
  * List the logged-in user's passkeys (for the Manage Passkeys page).

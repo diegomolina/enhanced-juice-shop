@@ -9,8 +9,6 @@
 @use './styles/theme' as *;
 @use './styles/variables' as *;
 
-@use './hacking-instructor/hacking-instructor.scss';
-
 @mixin link-theme($theme) {
   a:link,
   a:visited {
@@ -319,8 +317,6 @@
   }
 }
 
-$bg-hacking-instructor: rgba(0, 0, 0, 0.3);
-
 .deeppurple-amber-theme {
   @include custom-components-theme($deeppurple-amber-theme);
   @include css-vars($deeppurple-amber-theme);
@@ -627,47 +623,6 @@ $bg-hacking-instructor: rgba(0, 0, 0, 0.3);
     --mdc-chip-label-text-color: #000;
   }
 
-  // --- Score Board Specifics ---
-
-  // Category filter pills
-  .pill {
-    background-color: #000 !important;
-    color: #ff2d55 !important;
-    border: 1px solid #ff2d55 !important;
-  }
-
-  .pill.selected,
-  .pill.active {
-    background-color: #fc0 !important;
-    color: #000 !important;
-    border: 1px solid #fc0 !important;
-    text-shadow: none !important;
-  }
-
-  // Challenge tags
-  .tag {
-    background-color: #222 !important;
-    color: #fc0 !important;
-    border: 1px solid #666 !important;
-  }
-
-  .tag.tag-missing-dependency {
-    color: #ff3e3e !important;
-    border-color: #ff3e3e !important;
-  }
-
-  .tag.tag-available-dependency {
-    color: #00e676 !important;
-    border-color: #00e676 !important;
-  }
-
-  // Star gauge (challenges solved)
-  linearGradient[id^='solved-gradient-'] stop:last-child {
-    stop-color: #1a1a1a !important; // Use dark grey for "empty" part of star instead of pink
-  }
-
-  // --- End Score Board Specifics ---
-
   // Buttons
   .mat-mdc-button,
   .mat-mdc-raised-button {
@@ -696,18 +651,6 @@ $bg-hacking-instructor: rgba(0, 0, 0, 0.3);
     background-color: #111 !important;
     color: #666 !important;
     border: 1px solid #333;
-  }
-
-  // Score Board badge buttons: fix pink-on-yellow contrast and active/disabled hierarchy
-  .badge.not-completable,
-  .badge.completed,
-  .badge.partially-completed {
-    color: #000 !important;
-  }
-
-  .badge:disabled {
-    background-color: #222 !important;
-    color: #555 !important;
   }
 
   .mat-mdc-button:hover,
@@ -790,13 +733,6 @@ $bg-hacking-instructor: rgba(0, 0, 0, 0.3);
   }
 }
 
-#hacking-instructor code {
-  background-color: $bg-hacking-instructor;
-  border-radius: 1px;
-  font-family: monospace;
-  padding: 0 $space-2xs;
-}
-
 .cm-editor {
   border-radius: 16px;
 }
@@ -807,12 +743,6 @@ div.mdc-card {
 
 .mat-mdc-button {
   white-space: nowrap;
-}
-
-.multiline-tooltip {
-  line-height: 1.2;
-  max-width: 480px;
-  white-space: pre-line;
 }
 
 

@@ -24,7 +24,6 @@ export interface Config {
     theme: string
     showVersionNumber: boolean
     showGitHubLinks: boolean
-    localBackupEnabled: boolean
     numberOfRandomFakeUsers: number
     altcoinName: string
     privacyContactEmail: string
@@ -77,31 +76,8 @@ export interface Config {
       authorizedRedirects: any[]
     }
   }
-  challenges: {
-    showSolvedNotifications: boolean
-    showHints: boolean
-    showMitigations: boolean
-    codingChallengesEnabled: string
-    restrictToTutorialsFirst: boolean
-    safetyMode: string
-    overwriteUrlForProductTamperingChallenge: string
-    overwriteUrlForCsrfChallenge: string
-  }
-  hackingInstructor: {
-    isEnabled: boolean
-    avatarImage: string
-  }
   products: any[]
   memories: any[]
-  ctf: {
-    showFlagsInNotifications: boolean
-    showCountryDetailsInNotifications: string
-    countryMapping: any[]
-    systemWideNotifications?: {
-      url?: string
-      pollFrequencySeconds?: number
-    }
-  }
 }
 
 @Injectable({

@@ -17,7 +17,7 @@ import validateDependencies from './validateDependencies'
 export interface Dependency {
   dependency: string
   documentation: string
-  dependentChallenges: string[]
+  dependentFeatures: string[]
   missing?: boolean
 }
 
@@ -25,7 +25,7 @@ export const variableDependencies: Record<string, Dependency> = {
   ALCHEMY_API_KEY: {
     dependency: 'Alchemy API Key',
     documentation: 'https://howto-web3.owasp-juice.shop',
-    dependentChallenges: ['"Mint the Honey Pot" challenge', '"Wallet Depletion" challenge']
+    dependentFeatures: ['NFT minting', 'Web3 wallet']
   }
 }
 
@@ -33,12 +33,12 @@ export const domainDependencies: Record<string, Dependency> = {
   'https://www.alchemy.com/': {
     dependency: 'Alchemy API',
     documentation: 'https://howto-web3.owasp-juice.shop',
-    dependentChallenges: ['"Mint the Honey Pot" challenge', '"Wallet Depletion" challenge']
+    dependentFeatures: ['NFT minting', 'Web3 wallet']
   },
   [config.get<string>('application.chatBot.llmApiUrl')]: {
     dependency: 'LLM API',
     documentation: 'https://howto-llm.owasp-juice.shop',
-    dependentChallenges: ['"Chatbot Prompt Injection" challenge', '"Greedy Chatbot Manipulation" challenge', '"AI Debugging" challenge', '"System Prompt Extraction" challenge']
+    dependentFeatures: ['Chatbot']
   }
 }
 
@@ -62,7 +62,6 @@ const validatePreconditions = async ({ exitOnFailure = true } = {}) => {
     checkIfRequiredFileExists('frontend/dist/frontend/styles.css'),
     checkIfRequiredFileExists('frontend/dist/frontend/main.js'),
     checkIfRequiredFileExists('frontend/dist/frontend/polyfills.js'),
-    checkIfRequiredFilePatternExists('frontend/dist/frontend', /^hacking-instructor-.+\.js$/),
     checkIfPortIsAvailable(process.env.PORT ?? config.get<number>('server.port'))
   ])
   const asyncConditions = asyncResults.every(condition => condition)
@@ -85,14 +84,14 @@ const validatePreconditions = async ({ exitOnFailure = true } = {}) => {
     variableDependencies[llmModel] = {
       dependency: 'LLM Model',
       documentation: 'https://howto-llm.owasp-juice.shop',
-      dependentChallenges: ['"Chatbot Prompt Injection" challenge', '"Greedy Chatbot Manipulation" challenge', '"AI Debugging" challenge', '"System Prompt Extraction" challenge']
+      dependentFeatures: ['Chatbot']
     }
     preconditionResults[llmModel] = llmModelAvailable
     if (!isOllamaUrl(llmApiUrl)) {
       variableDependencies.LLM_API_KEY = {
         dependency: 'LLM API Key',
         documentation: 'https://howto-llm.owasp-juice.shop',
-        dependentChallenges: ['"Chatbot Prompt Injection" challenge', '"Greedy Chatbot Manipulation" challenge', '"AI Debugging" challenge', '"System Prompt Extraction" challenge']
+        dependentFeatures: ['Chatbot']
       }
       llmApiKeyEnvVarExists = checkIfEnvironmentVariableExists('LLM_API_KEY')
       preconditionResults.LLM_API_KEY = llmApiKeyEnvVarExists
@@ -153,7 +152,7 @@ export const checkIfEnvironmentVariableExists = (varName: string) => {
   }
   logger.warn(`Environment variable ${colors.bold(varName)} is not present (${colors.yellow('WARNING')})`)
   if (variableDependencies[varName]) {
-    variableDependencies[varName].dependentChallenges.forEach((dependency: string) => {
+    variableDependencies[varName].dependentFeatures.forEach((dependency: string) => {
       logger.warn(`${colors.italic(dependency)} will not work as intended without a valid ${colors.bold(varName)}`)
     })
   }
@@ -167,7 +166,7 @@ export const checkIfDomainReachable = async (domain: string) => {
     return true
   } catch {
     logger.warn(`Domain ${colors.bold(domain)} is not reachable (${colors.yellow('WARNING')})`)
-    domainDependencies[domain].dependentChallenges.forEach((dependency: string) => {
+    domainDependencies[domain].dependentFeatures.forEach((dependency: string) => {
       logger.warn(`${colors.italic(dependency)} will not work as intended without access to ${colors.bold(domain)}`)
     })
     return false

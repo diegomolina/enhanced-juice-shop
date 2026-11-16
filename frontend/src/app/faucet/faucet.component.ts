@@ -56,7 +56,7 @@ export class FaucetComponent implements OnInit {
   withdrawAmount: number = null
   successResponse = false
   mintButtonDisabled = true
-  challengeSolved = false
+  nftMinted = false
   nftMintText = 'Mint the Pot - 1000 BEE'
   errorMessage = ''
   metamaskAddress = ''
@@ -66,7 +66,6 @@ export class FaucetComponent implements OnInit {
       this.nftMintText = translatedString
     })
     this.handleAuth()
-    this.checkNftMinted()
     this.nftMintListener()
     window.ethereum.on('chainChanged', this.handleChainChanged.bind(this))
   }
@@ -79,28 +78,6 @@ export class FaucetComponent implements OnInit {
       },
       error: (error) => {
         console.error(error)
-      }
-    }
-    )
-  }
-
-  checkNftMinted () {
-    this.keysService.checkNftMinted().subscribe({
-      next:
-      (response) => {
-        const challengeSolvedStatus = response.data[0].solved
-        this.mintButtonDisabled = challengeSolvedStatus
-        this.challengeSolved = challengeSolvedStatus
-        if (challengeSolvedStatus) {
-          this.translateService.get('NFT_MINT_TEXT_SUCCESS').subscribe((translatedString: string) => {
-            this.nftMintText = translatedString
-          })
-        }
-      },
-      error:
-      (error) => {
-        console.error(error)
-        this.successResponse = false
       }
     }
     )
@@ -122,10 +99,10 @@ export class FaucetComponent implements OnInit {
       this.myBEEBalance = balanceBigNumber
         .div(ethers.constants.WeiPerEther)
         .toNumber()
-      if (this.myBEEBalance >= 1000 && !this.challengeSolved) {
+      if (this.myBEEBalance >= 1000 && !this.nftMinted) {
         this.mintButtonDisabled = false
       }
-      if (this.myBEEBalance <= 1000 && !this.challengeSolved) {
+      if (this.myBEEBalance <= 1000 && !this.nftMinted) {
         this.mintButtonDisabled = true
       }
     } catch (error) {
@@ -292,6 +269,7 @@ export class FaucetComponent implements OnInit {
             (response) => {
               if (response.success) {
                 this.successResponse = response.status
+                this.nftMinted = true
                 this.mintButtonDisabled = true
               }
             },

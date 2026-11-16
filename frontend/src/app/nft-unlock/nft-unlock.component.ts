@@ -31,10 +31,10 @@ export class NFTUnlockComponent implements OnInit {
   }
 
   ngOnInit (): void {
-    this.checkChallengeStatus()
+    this.checkUnlockStatus()
   }
 
-  checkChallengeStatus () {
+  checkUnlockStatus () {
     this.keysService.nftUnlocked().subscribe({
       next:
       (response) => {

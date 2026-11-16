@@ -34,7 +34,6 @@ import type { Request, Response, NextFunction } from 'express'
 import { sequelize, createSequelize, initModels, setSequelize } from './models'
 import { UserModel } from './models/user'
 import { CardModel } from './models/card'
-import { HintModel } from './models/hint'
 import { WalletModel } from './models/wallet'
 import { ProductModel } from './models/product'
 import { RecycleModel } from './models/recycle'
@@ -42,8 +41,6 @@ import { AddressModel } from './models/address'
 import { QuantityModel } from './models/quantity'
 import { FeedbackModel } from './models/feedback'
 import { ComplaintModel } from './models/complaint'
-import { ChallengeModel } from './models/challenge'
-import { ChallengeDependencyModel } from './models/challengeDependency'
 import { BasketItemModel } from './models/basketitem'
 import { SecurityAnswerModel } from './models/securityAnswer'
 import { PrivacyRequestModel } from './models/privacyRequests'
@@ -51,7 +48,6 @@ import { SecurityQuestionModel } from './models/securityQuestion'
 
 import logger from './lib/logger'
 import * as utils from './lib/utils'
-import * as antiCheat from './lib/antiCheat'
 import * as security from './lib/insecurity'
 import { customizeTerraformContent } from './lib/terraformCustomization'
 import validateConfig from './lib/startup/validateConfig'
@@ -59,14 +55,12 @@ import cleanupFtpFolder from './lib/startup/cleanupFtpFolder'
 import customizeEasterEgg from './lib/startup/customizeEasterEgg' // vuln-code-snippet hide-line
 import customizeApplication from './lib/startup/customizeApplication'
 import validatePreconditions, { preconditionsReady } from './lib/startup/validatePreconditions'
-import registerWebsocketEvents from './lib/startup/registerWebsocketEvents'
 import restoreOverwrittenFilesWithOriginals from './lib/startup/restoreOverwrittenFilesWithOriginals'
 
 import datacreator from './data/datacreator'
 import locales from './data/static/locales.json'
 
 import { login } from './routes/login'
-import * as verify from './routes/verify'
 import * as address from './routes/address'
 import * as metrics from './routes/metrics'
 import * as payment from './routes/payment'
@@ -89,7 +83,6 @@ import * as basketItems from './routes/basketItems'
 import { performRedirect } from './routes/redirect'
 import { serveEasterEgg } from './routes/easterEgg'
 import { getLanguageList } from './routes/languages'
-import { getTagGroups } from './routes/tags'
 import { getUserProfile } from './routes/userProfile'
 import { serveAngularClient } from './routes/angular'
 import { resetPassword } from './routes/resetPassword'
@@ -97,10 +90,8 @@ import { serveLogFiles } from './routes/logfileServer'
 import { servePublicFiles } from './routes/fileServer'
 import { addMemory, getMemories } from './routes/memory'
 import { changePassword } from './routes/changePassword'
-import { countryMapping } from './routes/countryMapping'
 import { retrieveAppVersion } from './routes/appVersion'
 import { captchas, verifyCaptcha } from './routes/captcha'
-import * as restoreProgress from './routes/restoreProgress'
 import { checkKeys, nftUnlocked } from './routes/checkKeys'
 import { retrieveLoggedInUser } from './routes/currentUser'
 import authenticatedUsers from './routes/authenticatedUsers'
@@ -110,7 +101,6 @@ import { contractExploitListener } from './routes/web3Wallet'
 import { updateUserProfile } from './routes/updateUserProfile'
 import { getVideo, promotionVideo } from './routes/videoHandler'
 import { likeProductReviews } from './routes/likeProductReviews'
-import { repeatNotification } from './routes/repeatNotification'
 import { serveQuarantineFiles } from './routes/quarantineServer'
 import { showProductReviews } from './routes/showProductReviews'
 import { nftMintListener, walletNFTVerify } from './routes/nftMint'
@@ -121,13 +111,10 @@ import { updateProductReviews } from './routes/updateProductReviews'
 import { servePrivacyPolicyProof } from './routes/privacyPolicyProof'
 import { profileImageUrlUpload } from './routes/profileImageUrlUpload'
 import { profileImageFileUpload } from './routes/profileImageFileUpload'
-import { serveCodeFixes, checkCorrectFix } from './routes/vulnCodeFixes'
 import { imageCaptchas, verifyImageCaptcha } from './routes/imageCaptcha'
 import { upgradeToDeluxe, deluxeMembershipStatus } from './routes/deluxe'
-import { serveCodeSnippet, checkVulnLines } from './routes/vulnCodeSnippet'
 import { orderHistory, allOrders, toggleDeliveryStatus } from './routes/orderHistory'
-import { continueCode, continueCodeFindIt, continueCodeFixIt } from './routes/continueCode'
-import { ensureFileIsPassed, handleZipFileUpload, checkUploadSize, checkFileType, handleXmlUpload, handleYamlUpload } from './routes/fileUpload'
+import { ensureFileIsPassed, handleZipFileUpload, handleXmlUpload, handleYamlUpload } from './routes/fileUpload'
 
 const app = express()
 const server = new http.Server(app)
@@ -172,10 +159,6 @@ void collectDurationPromise('validateConfig', validateConfig)({})
 function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   /* Locals */
   app.locals.captchaId = 0
-  app.locals.captchaReqId = 1
-  app.locals.captchaBypassReqTimes = []
-  app.locals.abused_ssti_bug = false
-  app.locals.abused_ssrf_bug = false
 
   /* Compression for all requests */
   app.use(compression())
@@ -213,7 +196,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   /* Security Policy */
   const securityTxtExpiration = new Date()
   securityTxtExpiration.setFullYear(securityTxtExpiration.getFullYear() + 1)
-  app.get(['/.well-known/security.txt', '/security.txt'], verify.accessControlChallenges())
   app.use(['/.well-known/security.txt', '/security.txt'], securityTxt({
     contact: config.get('application.securityTxt.contact'),
     encryption: config.get('application.securityTxt.encryption'),
@@ -229,18 +211,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
 
   /* robots.txt */
   app.use(robots({ UserAgent: '*', Disallow: '/ftp' }))
-
-  /* Check for any URLs having been called that would be expected for challenge solving without cheating */
-  app.use(antiCheat.checkForPreSolveInteractions())
-
-  /* Checks for challenges solved by retrieving a file implicitly or explicitly */
-  app.use('/assets/public/images/padding', verify.accessControlChallenges())
-  app.use('/assets/public/images/products', verify.accessControlChallenges())
-  app.use('/assets/public/images/uploads', verify.accessControlChallenges())
-  app.use('/assets/i18n', verify.accessControlChallenges())
-
-  /* Checks for challenges solved by abusing SSTi and SSRF bugs */
-  app.use('/solve/challenges/server-side', verify.serverSideChallenges())
 
   /* Create middleware to change paths from the serve-index plugin from absolute to relative */
   const serveIndexMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -271,7 +241,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
 
   /* /infrastructure directory browsing */
   app.use('/infrastructure', serveIndexMiddleware, serveIndex('infrastructure', { icons: true, view: 'details', filter: (filename) => filename !== 'README.md' }))
-  app.use('/infrastructure', verify.accessControlChallenges())
   app.use('/infrastructure', (req: Request, res: Response, next: NextFunction) => {
     const filePath = path.resolve('infrastructure', path.normalize(req.path).replace(/^[\\/]+/, ''))
     if (!filePath.startsWith(path.resolve('infrastructure')) || filePath.endsWith('README.md')) {
@@ -280,8 +249,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     if (filePath.endsWith('.tf') || filePath.endsWith('.yml') || filePath.endsWith('Dockerfile')) {
       fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) return next()
-        const cleaned = data.split('\n').filter(line => !line.trim().match(/^#\s*vuln-code-snippet\s/)).map(line => line.replace(/\s*#\s*vuln-code-snippet\s.*$/, '')).join('\n')
-        const content = filePath.endsWith('.tf') ? customizeTerraformContent(cleaned) : cleaned
+        const content = filePath.endsWith('.tf') ? customizeTerraformContent(data) : data
         res.type('text/plain').send(content)
       })
     } else {
@@ -304,7 +272,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
 
   /* /logs directory browsing */ // vuln-code-snippet neutral-line accessLogDisclosureChallenge
   app.use('/support/logs', serveIndexMiddleware, serveIndex('logs', { icons: true, view: 'details' })) // vuln-code-snippet vuln-line accessLogDisclosureChallenge
-  app.use('/support/logs', verify.accessControlChallenges()) // vuln-code-snippet hide-line
   app.use('/support/logs/:file', serveLogFiles()) // vuln-code-snippet vuln-line accessLogDisclosureChallenge
 
   /* Swagger documentation for B2B v2 endpoints */
@@ -338,7 +305,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
 
   app.use(express.urlencoded({ extended: true }))
   /* File Upload */
-  app.post('/file-upload', uploadToMemory.single('file'), ensureFileIsPassed, metrics.observeFileUploadMetricsMiddleware(), checkUploadSize, checkFileType, handleZipFileUpload, handleXmlUpload, handleYamlUpload)
+  app.post('/file-upload', uploadToMemory.single('file'), ensureFileIsPassed, metrics.observeFileUploadMetricsMiddleware(), handleZipFileUpload, handleXmlUpload, handleYamlUpload)
   app.post('/profile/image/file', uploadToMemory.single('file'), ensureFileIsPassed, metrics.observeFileUploadMetricsMiddleware(), utils.asyncHandler(profileImageFileUpload()))
   app.post('/profile/image/url', uploadToMemory.single('file'), utils.asyncHandler(profileImageUrlUpload()))
   app.post('/rest/memories', uploadToDisk.single('image'), ensureFileIsPassed, security.appendUserId(), metrics.observeFileUploadMetricsMiddleware(), utils.asyncHandler(addMemory()))
@@ -382,7 +349,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   // vuln-code-snippet start changeProductChallenge
   /** Authorization **/
   /* Checks on JWT in Authorization header */ // vuln-code-snippet hide-line
-  app.use(verify.jwtChallenges()) // vuln-code-snippet hide-line
   app.use(security.updateAuthenticatedUsers()) // vuln-code-snippet hide-line
   /* Baskets: Unauthorized users are not allowed to access baskets */
   app.use('/rest/basket', security.isAuthorized(), security.appendUserId())
@@ -401,14 +367,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.post('/api/Products', security.isAuthorized()) // vuln-code-snippet neutral-line changeProductChallenge
   // app.put('/api/Products/:id', security.isAuthorized()) // vuln-code-snippet vuln-line changeProductChallenge
   app.delete('/api/Products/:id', security.denyAll())
-  /* Challenges: GET list of challenges allowed. Everything else forbidden entirely */
-  app.post('/api/Challenges', security.denyAll())
-  app.use('/api/Challenges/:id', security.denyAll())
-  /* Hints: GET and PUT hints allowed. Everything else forbidden */
-  app.post('/api/Hints', security.denyAll())
-  app.route('/api/Hints/:id')
-    .get(security.denyAll())
-    .delete(security.denyAll())
   /* Complaints: POST and GET allowed when logged in only */
   app.get('/api/Complaints', security.isAuthorized())
   app.post('/api/Complaints', security.isAuthorized())
@@ -431,11 +389,8 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.use('/rest/basket/:id', security.isAuthorized())
   app.use('/rest/basket/:id/order', security.isAuthorized())
   /* Challenge evaluation before finale takes over */ // vuln-code-snippet hide-start
-  app.post('/api/Feedbacks', verify.forgedFeedbackChallenge())
   /* Captcha verification before finale takes over */
   app.post('/api/Feedbacks', utils.asyncHandler(verifyCaptcha()))
-  /* Captcha Bypass challenge verification */
-  app.post('/api/Feedbacks', verify.captchaBypassChallenge())
   /* User registration challenge verifications before finale takes over */
   app.post('/api/Users', (req: Request, res: Response, next: NextFunction) => {
     if (req.body.email !== undefined && req.body.password !== undefined && req.body.passwordRepeat !== undefined) {
@@ -449,9 +404,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     }
     next()
   })
-  app.post('/api/Users', verify.registerAdminChallenge())
-  app.post('/api/Users', verify.passwordRepeatChallenge()) // vuln-code-snippet hide-end
-  app.post('/api/Users', verify.emptyUserRegistration())
+  // vuln-code-snippet hide-end
   /* Unauthorized users are not allowed to access B2B API */
   app.use('/b2b/v2', security.isAuthorized())
   /* Check if the quantity is available in stock and limit per user not exceeded, then add item to basket */
@@ -512,8 +465,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.post('/rest/passkey/login-verify', utils.asyncHandler(passkey.loginVerify))
   app.get('/rest/passkey/credentials', security.isAuthorized(), utils.asyncHandler(passkey.listCredentials))
   app.delete('/rest/passkey/credentials/:id', security.isAuthorized(), utils.asyncHandler(passkey.deleteCredential))
-  /* Verifying DB related challenges can be postponed until the next request for challenges is coming via finale */
-  app.use(verify.databaseRelatedChallenges())
 
   // vuln-code-snippet start registerAdminChallenge
   /* Generated API endpoints */
@@ -524,7 +475,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     { name: 'Product', exclude: [], model: ProductModel },
     { name: 'Feedback', exclude: [], model: FeedbackModel },
     { name: 'BasketItem', exclude: [], model: BasketItemModel },
-    { name: 'Challenge', exclude: [], model: ChallengeModel, include: [ChallengeDependencyModel] },
     { name: 'Complaint', exclude: [], model: ComplaintModel },
     { name: 'Recycle', exclude: [], model: RecycleModel },
     { name: 'SecurityQuestion', exclude: [], model: SecurityQuestionModel },
@@ -532,17 +482,15 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     { name: 'Address', exclude: [], model: AddressModel },
     { name: 'PrivacyRequest', exclude: [], model: PrivacyRequestModel },
     { name: 'Card', exclude: [], model: CardModel },
-    { name: 'Quantity', exclude: [], model: QuantityModel },
-    { name: 'Hint', exclude: [], model: HintModel }
+    { name: 'Quantity', exclude: [], model: QuantityModel }
   ]
 
-  for (const { name, exclude, model, include } of autoModels) {
+  for (const { name, exclude, model } of autoModels) {
     const resource = finale.resource({
       model,
       endpoints: [`/api/${name}s`, `/api/${name}s/:id`],
       excludeAttributes: exclude,
-      pagination: false,
-      include
+      pagination: false
     })
 
     // create a wallet when a new user is registered using API
@@ -556,27 +504,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     } // vuln-code-snippet neutral-line registerAdminChallenge
     // vuln-code-snippet end registerAdminChallenge
 
-    // translate challenge descriptions on-the-fly
-    if (name === 'Challenge') {
-      resource.list.fetch.after((req: Request, res: Response, context: { instance: string | any[], continue: any }) => {
-        for (let i = 0; i < context.instance.length; i++) {
-          let description = context.instance[i].description
-          if (description?.includes('<em>(This challenge is <strong>')) {
-            const warning = description.substring(description.indexOf(' <em>(This challenge is <strong>'))
-            description = description.substring(0, description.indexOf(' <em>(This challenge is <strong>'))
-            context.instance[i].description = req.__(description) + req.__(warning)
-          } else {
-            context.instance[i].description = req.__(description)
-          }
-        }
-        return context.continue
-      })
-      resource.read.send.before((req: Request, res: Response, context: { instance: { description: string, hint: string }, continue: any }) => {
-        context.instance.description = req.__(context.instance.description)
-        return context.continue
-      })
-    }
-
     // translate security questions on-the-fly
     if (name === 'SecurityQuestion') {
       resource.list.fetch.after((req: Request, res: Response, context: { instance: string | any[], continue: any }) => {
@@ -587,20 +514,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
       })
       resource.read.send.before((req: Request, res: Response, context: { instance: { question: string }, continue: any }) => {
         context.instance.question = req.__(context.instance.question)
-        return context.continue
-      })
-    }
-
-    // translate hints on-the-fly
-    if (name === 'Hint') {
-      resource.list.fetch.after((req: Request, res: Response, context: { instance: string | any[], continue: any }) => {
-        for (let i = 0; i < context.instance.length; i++) {
-          context.instance[i].text = req.__(context.instance[i].text)
-        }
-        return context.continue
-      })
-      resource.read.send.before((req: Request, res: Response, context: { instance: { text: string }, continue: any }) => {
-        context.instance.text = req.__(context.instance.text)
         return context.continue
       })
     }
@@ -644,22 +557,13 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.put('/rest/basket/:id/coupon/:coupon', utils.asyncHandler(applyCoupon()))
   app.get('/rest/admin/application-version', utils.asyncHandler(retrieveAppVersion()))
   app.get('/rest/admin/application-configuration', utils.asyncHandler(retrieveAppConfiguration()))
-  app.get('/rest/repeat-notification', utils.asyncHandler(repeatNotification()))
-  app.get('/rest/continue-code', utils.asyncHandler(continueCode()))
-  app.get('/rest/continue-code-findIt', utils.asyncHandler(continueCodeFindIt()))
-  app.get('/rest/continue-code-fixIt', utils.asyncHandler(continueCodeFixIt()))
-  app.put('/rest/continue-code-findIt/apply/:continueCode', utils.asyncHandler(restoreProgress.restoreProgressFindIt()))
-  app.put('/rest/continue-code-fixIt/apply/:continueCode', utils.asyncHandler(restoreProgress.restoreProgressFixIt()))
-  app.put('/rest/continue-code/apply/:continueCode', utils.asyncHandler(restoreProgress.restoreProgress()))
   app.get('/rest/captcha', utils.asyncHandler(captchas()))
   app.get('/rest/image-captcha', utils.asyncHandler(imageCaptchas()))
   app.get('/rest/track-order/:id', trackOrder())
-  app.get('/rest/country-mapping', utils.asyncHandler(countryMapping()))
   app.get('/rest/saveLoginIp', utils.asyncHandler(saveLoginIp()))
   app.post('/rest/user/data-export', security.appendUserId(), utils.asyncHandler(verifyImageCaptcha()))
   app.post('/rest/user/data-export', security.appendUserId(), utils.asyncHandler(dataExport()))
   app.get('/rest/languages', utils.asyncHandler(getLanguageList()))
-  app.get('/rest/tags', utils.asyncHandler(getTagGroups()))
   app.get('/rest/order-history', utils.asyncHandler(orderHistory()))
   app.get('/rest/order-history/orders', security.isAccounting(), utils.asyncHandler(allOrders()))
   app.put('/rest/order-history/:id/delivery-status', security.isAccounting(), utils.asyncHandler(toggleDeliveryStatus()))
@@ -706,19 +610,12 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.get('/profile', utils.asyncHandler(getUserProfile()))
   app.post('/profile', utils.asyncHandler(updateUserProfile()))
 
-  /* Route for vulnerable code snippets */
-  app.get('/snippets/:challenge', utils.asyncHandler(serveCodeSnippet()))
-  app.post('/snippets/verdict', utils.asyncHandler(checkVulnLines()))
-  app.get('/snippets/fixes/:key', utils.asyncHandler(serveCodeFixes()))
-  app.post('/snippets/fixes', utils.asyncHandler(checkCorrectFix()))
-
   /* Serve metrics before the Angular catch-all so the route is reachable in all environments */
   app.get('/metrics', utils.asyncHandler(metrics.serveMetrics()))
 
   app.use(utils.asyncHandler(serveAngularClient()))
 
   /* Error Handling */
-  app.use(verify.errorHandlingChallenge())
   app.use(errorhandler())
 }
 
@@ -758,7 +655,7 @@ const uploadToDisk = multer({
   })
 })
 
-const expectedModels = ['Address', 'Basket', 'BasketItem', 'Captcha', 'Card', 'Challenge', 'ChallengeDependency', 'Complaint', 'Delivery', 'Feedback', 'ImageCaptcha', 'Memory', 'PrivacyRequestModel', 'Product', 'Quantity', 'Recycle', 'SecurityAnswer', 'SecurityQuestion', 'User', 'Wallet', 'Hint', 'Passkey']
+const expectedModels = ['Address', 'Basket', 'BasketItem', 'Captcha', 'Card', 'Complaint', 'Delivery', 'Feedback', 'ImageCaptcha', 'Memory', 'PrivacyRequestModel', 'Product', 'Quantity', 'Recycle', 'SecurityAnswer', 'SecurityQuestion', 'User', 'Wallet', 'Passkey']
 while (!expectedModels.every(model => Object.keys(sequelize.models).includes(model))) {
   logger.info(`Entity models ${colors.bold(Object.keys(sequelize.models).length.toString())} of ${colors.bold(expectedModels.length.toString())} are initialized (${colors.yellow('WAITING')})`)
 }
@@ -788,7 +685,6 @@ export async function start (readyCallback?: () => void) {
     if (process.env.BASE_PATH !== '') {
       logger.info(colors.cyan(`Server using proxy base path ${colors.bold(`${process.env.BASE_PATH}`)} for redirects`))
     }
-    registerWebsocketEvents(server)
     if (readyCallback) {
       readyCallback()
     }
