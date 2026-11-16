@@ -17,7 +17,7 @@ export function contractEventListener () {
         const { WebSocketProvider, Contract } = await import('ethers')
         const provider = new WebSocketProvider(`wss://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY ?? ''}`)
         provider.websocket.onerror = (error: any) => {
-          logger.error(`WebSocket error (Contract Exploit Listener): ${error.message || error}`)
+          logger.error(`WebSocket error (Contract Event Listener): ${error.message || error}`)
           isEventListenerCreated = false
         }
         const contract = new Contract(web3WalletAddress, web3WalletABI, provider as any)
