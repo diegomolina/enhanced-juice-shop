@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import {
   Model,
   type InferAttributes,
@@ -19,10 +14,10 @@ InferCreationAttributes<Passkey>
   declare id: CreationOptional<number>
   declare UserId: number
   declare credentialID: string
-  declare publicKey: string // base64url-encoded COSE public key
+  declare publicKey: string
   declare counter: CreationOptional<number>
-  declare transports: CreationOptional<string> // comma-separated list
-  declare aaguid: CreationOptional<string> // identifies the passkey provider, all zeros if not disclosed
+  declare transports: CreationOptional<string>
+  declare aaguid: CreationOptional<string>
   declare createdAt: CreationOptional<Date>
 }
 

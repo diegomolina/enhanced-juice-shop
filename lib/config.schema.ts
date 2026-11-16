@@ -1,11 +1,4 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { z } from 'zod'
-
-// -- Application sub-schemas --
 
 const ChatBotSchema = z.object({
   name: z.string(),
@@ -68,8 +61,6 @@ const GoogleOauthSchema = z.object({
   clientId: z.string(),
   authorizedRedirects: z.array(z.object({ uri: z.string(), proxy: z.string().optional() }))
 })
-
-// -- Section schemas --
 
 export const ServerSchema = z.object({
   port: z.number(),
@@ -150,8 +141,6 @@ export const AppConfigSchema = z.object({
   memories: z.array(MemorySchema)
 })
 
-// Recursively drops null-valued object keys and null array elements.
-// custom configs use null to signal that a value from the default.yml should be overwritten
 const dropNulls = (value: unknown): unknown => {
   if (Array.isArray(value)) {
     return value.filter((entry) => entry != null).map(dropNulls)
@@ -166,7 +155,6 @@ const dropNulls = (value: unknown): unknown => {
   return value
 }
 
-// Deep-partial schema for validating possibly-incomplete individual YAML config files.
 export const ValidationSchema = z.preprocess(dropNulls, z.object({
   server: ServerSchema.partial().optional(),
   application: ApplicationSchema.partial().extend({

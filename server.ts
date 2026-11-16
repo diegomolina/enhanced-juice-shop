@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
 import i18n from 'i18n'
 import cors from 'cors'
 import fs from 'node:fs'
@@ -15,17 +11,17 @@ import path from 'node:path'
 import express from 'express'
 import colors from './lib/colors'
 import serveIndex from 'serve-index'
-// @ts-expect-error FIXME due to non-existing type definitions for finale-rest
+// @ts-expect-error
 import * as finale from 'finale-rest'
 import compression from 'compression'
-// @ts-expect-error FIXME due to non-existing type definitions for express-robots-txt
+// @ts-expect-error
 import robots from 'express-robots-txt'
 import cookieParser from 'cookie-parser'
 import * as Prometheus from 'prom-client'
 import swaggerUi from 'swagger-ui-express'
 import featurePolicy from 'feature-policy'
 import { IpFilter } from 'express-ipfilter'
-// @ts-expect-error FIXME due to non-existing type definitions for express-security.txt
+// @ts-expect-error
 import securityTxt from 'express-security.txt'
 import { rateLimit } from 'express-rate-limit'
 import { getStream } from 'file-stream-rotator'
@@ -52,7 +48,7 @@ import * as security from './lib/insecurity'
 import { customizeTerraformContent } from './lib/terraformCustomization'
 import validateConfig from './lib/startup/validateConfig'
 import cleanupFtpFolder from './lib/startup/cleanupFtpFolder'
-import customizeEasterEgg from './lib/startup/customizeEasterEgg' // vuln-code-snippet hide-line
+import customizeEasterEgg from './lib/startup/customizeEasterEgg'
 import customizeApplication from './lib/startup/customizeApplication'
 import validatePreconditions, { preconditionsReady } from './lib/startup/validatePreconditions'
 import restoreOverwrittenFilesWithOriginals from './lib/startup/restoreOverwrittenFilesWithOriginals'
@@ -119,8 +115,6 @@ import { ensureFileIsPassed, handleZipFileUpload, handleXmlUpload, handleYamlUpl
 const app = express()
 const server = new http.Server(app)
 
-// errorhandler requires us from overwriting a string property on it's module which is a big no-no with esmodules :/
-
 const errorhandler = require('errorhandler')
 
 const startTime = Date.now()
@@ -134,7 +128,6 @@ const startupGauge = new Prometheus.Gauge({
   labelNames: ['task']
 })
 
-// Wraps the function and measures its (async) execution time
 const collectDurationPromise = (name: string, func: (...args: any) => Promise<any>) => {
   return async (...args: any) => {
     const end = startupGauge.startTimer({ task: name })
@@ -149,7 +142,6 @@ const collectDurationPromise = (name: string, func: (...args: any) => Promise<an
   }
 }
 
-/* Sets view engine to hbs */
 app.set('view engine', 'hbs')
 
 void collectDurationPromise('validatePreconditions', validatePreconditions)()
@@ -157,20 +149,15 @@ void collectDurationPromise('cleanupFtpFolder', cleanupFtpFolder)()
 void collectDurationPromise('validateConfig', validateConfig)({})
 
 function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
-  /* Locals */
   app.locals.captchaId = 0
 
-  /* Compression for all requests */
   app.use(compression())
 
-  /* Bludgeon solution for possible CORS problems: Allow everything! */
   app.options('*', cors())
   app.use(cors())
 
-  /* Security middleware */
   app.use(helmet.noSniff())
   app.use(helmet.frameguard())
-  // app.use(helmet.xssFilter()); // = no protection from persisted XSS via RESTful API
   app.disable('x-powered-by')
   app.use(featurePolicy({
     features: {
@@ -178,22 +165,18 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     }
   }))
 
-  /* Hiring header */
   app.use((req: Request, res: Response, next: NextFunction) => {
     res.append('X-Recruiting', config.get('application.securityTxt.hiring'))
     next()
   })
 
-  /* Remove duplicate slashes from URL which allowed bypassing subsequent filters */
   app.use((req: Request, res: Response, next: NextFunction) => {
     req.url = req.url.replace(/[/]+/g, '/')
     next()
   })
 
-  /* Increase request counter metric for every request */
   app.use(metrics.observeRequestMetricsMiddleware())
 
-  /* Security Policy */
   const securityTxtExpiration = new Date()
   securityTxtExpiration.setFullYear(securityTxtExpiration.getFullYear() + 1)
   app.use(['/.well-known/security.txt', '/security.txt'], securityTxt({
@@ -206,16 +189,13 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     expires: securityTxtExpiration.toUTCString()
   }))
 
-  /* Passkey Endpoints (W3C) for password managers */
   app.get('/.well-known/passkey-endpoints', passkey.passkeyEndpoints)
 
-  /* robots.txt */
   app.use(robots({ UserAgent: '*', Disallow: '/ftp' }))
 
-  /* Create middleware to change paths from the serve-index plugin from absolute to relative */
   const serveIndexMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const origEnd = res.end
-    // @ts-expect-error FIXME assignment broken due to seemingly void return value
+    // @ts-expect-error
     res.end = function () {
       if (arguments.length && typeof arguments[0] === 'string') {
         const reqPath = req.originalUrl.replace(/\?.*$/, '')
@@ -233,13 +213,12 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
           return 'a href="' + relativePath + '"'
         })
       }
-      // @ts-expect-error FIXME passed argument has wrong type
+      // @ts-expect-error
       origEnd.apply(this, arguments)
     }
     next()
   }
 
-  /* /infrastructure directory browsing */
   app.use('/infrastructure', serveIndexMiddleware, serveIndex('infrastructure', { icons: true, view: 'details', filter: (filename) => filename !== 'README.md' }))
   app.use('/infrastructure', (req: Request, res: Response, next: NextFunction) => {
     const filePath = path.resolve('infrastructure', path.normalize(req.path).replace(/^[\\/]+/, ''))
@@ -257,27 +236,21 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     }
   })
 
-  // vuln-code-snippet start directoryListingChallenge accessLogDisclosureChallenge
-  /* /ftp directory browsing and file download */ // vuln-code-snippet neutral-line directoryListingChallenge
-  app.use('/ftp', serveIndexMiddleware, serveIndex('ftp', { icons: true })) // vuln-code-snippet vuln-line directoryListingChallenge
-  app.use('/ftp(?!/quarantine)/:file', servePublicFiles()) // vuln-code-snippet vuln-line directoryListingChallenge
-  app.use('/ftp/quarantine/:file', serveQuarantineFiles()) // vuln-code-snippet neutral-line directoryListingChallenge
+  app.use('/ftp', serveIndexMiddleware, serveIndex('ftp', { icons: true }))
+  app.use('/ftp(?!/quarantine)/:file', servePublicFiles())
+  app.use('/ftp/quarantine/:file', serveQuarantineFiles())
 
   app.use('/.well-known', serveIndexMiddleware, serveIndex('.well-known', { icons: true, view: 'details' }))
   app.use('/.well-known', express.static('.well-known'))
 
-  /* /encryptionkeys directory browsing */
   app.use('/encryptionkeys', serveIndexMiddleware, serveIndex('encryptionkeys', { icons: true, view: 'details' }))
   app.use('/encryptionkeys/:file', serveKeyFiles())
 
-  /* /logs directory browsing */ // vuln-code-snippet neutral-line accessLogDisclosureChallenge
-  app.use('/support/logs', serveIndexMiddleware, serveIndex('logs', { icons: true, view: 'details' })) // vuln-code-snippet vuln-line accessLogDisclosureChallenge
-  app.use('/support/logs/:file', serveLogFiles()) // vuln-code-snippet vuln-line accessLogDisclosureChallenge
+  app.use('/support/logs', serveIndexMiddleware, serveIndex('logs', { icons: true, view: 'details' }))
+  app.use('/support/logs/:file', serveLogFiles())
 
-  /* Swagger documentation for B2B v2 endpoints */
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
-  /* Express 4 ships mime@1.x which predates AVIF, so .avif would be served as application/octet-stream */
   const setStaticFileHeaders = (res: http.ServerResponse, filePath: string) => {
     if (path.extname(filePath) === '.avif') {
       res.setHeader('Content-Type', 'image/avif')
@@ -286,14 +259,11 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
 
   app.use(express.static(path.resolve('frontend/dist/frontend'), { setHeaders: setStaticFileHeaders }))
   app.use(cookieParser('kekse'))
-  // vuln-code-snippet end directoryListingChallenge accessLogDisclosureChallenge
 
-  /* Serve vendor dependencies locally instead of from CDN */
   app.use('/vendor/beercss', express.static(path.resolve('node_modules/beercss/dist/cdn')))
   app.use('/vendor/material-icons', express.static(path.resolve('node_modules/material-icons/iconfont')))
   app.use('/vendor/fontsource-roboto', express.static(path.resolve('node_modules/@fontsource/roboto')))
 
-  /* Configure and enable backend-side i18n */
   i18n.configure({
     locales: locales.map((locale: { key: string }) => locale.key),
     directory: path.resolve('i18n'),
@@ -304,7 +274,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.use(i18n.init)
 
   app.use(express.urlencoded({ extended: true }))
-  /* File Upload */
   app.post('/file-upload', uploadToMemory.single('file'), ensureFileIsPassed, metrics.observeFileUploadMetricsMiddleware(), handleZipFileUpload, handleXmlUpload, handleYamlUpload)
   app.post('/profile/image/file', uploadToMemory.single('file'), ensureFileIsPassed, metrics.observeFileUploadMetricsMiddleware(), utils.asyncHandler(profileImageFileUpload()))
   app.post('/profile/image/url', uploadToMemory.single('file'), utils.asyncHandler(profileImageUrlUpload()))
@@ -312,20 +281,19 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
 
   app.use(express.text({ type: '*/*' }))
   app.use(function jsonParser (req: Request, res: Response, next: NextFunction) {
-    // @ts-expect-error FIXME intentionally saving original request in this property
+    // @ts-expect-error
     req.rawBody = req.body
     if (req.headers['content-type']?.includes('application/json')) {
       if (!req.body) {
         req.body = {}
       }
-      if (req.body !== Object(req.body)) { // Expensive workaround for 500 errors during Frisby test run (see #640)
+      if (req.body !== Object(req.body)) {
         req.body = JSON.parse(req.body)
       }
     }
     next()
   })
 
-  /* HTTP request logging */
   const accessLogStream = getStream({
     filename: path.resolve('logs/access.log.%DATE%'),
     date_format: 'YYYY-MM-DD',
@@ -336,62 +304,41 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   })
   app.use(morgan('combined', { stream: accessLogStream }))
 
-  // vuln-code-snippet start resetPasswordMortyChallenge
-  /* Rate limiting */
   app.enable('trust proxy')
   app.use('/rest/user/reset-password', rateLimit({
     windowMs: 5 * 60 * 1000,
     max: 100,
-    keyGenerator ({ headers, ip }: { headers: any, ip: any }) { return headers['X-Forwarded-For'] ?? ip } // vuln-code-snippet vuln-line resetPasswordMortyChallenge
+    keyGenerator ({ headers, ip }: { headers: any, ip: any }) { return headers['X-Forwarded-For'] ?? ip }
   }))
-  // vuln-code-snippet end resetPasswordMortyChallenge
 
-  // vuln-code-snippet start changeProductChallenge
-  /** Authorization **/
-  /* Checks on JWT in Authorization header */ // vuln-code-snippet hide-line
-  app.use(security.updateAuthenticatedUsers()) // vuln-code-snippet hide-line
-  /* Baskets: Unauthorized users are not allowed to access baskets */
+  app.use(security.updateAuthenticatedUsers())
   app.use('/rest/basket', security.isAuthorized(), security.appendUserId())
-  /* BasketItems: API only accessible for authenticated users */
   app.use('/api/BasketItems', security.isAuthorized())
   app.use('/api/BasketItems/:id', security.isAuthorized())
-  /* Feedbacks: GET allowed for feedback carousel, POST allowed in order to provide feedback without being logged in */
   app.use('/api/Feedbacks/:id', security.isAuthorized())
-  /* Users: Only POST is allowed in order to register a new user */
   app.get('/api/Users', security.isAuthorized())
   app.route('/api/Users/:id')
     .get(security.isAuthorized())
     .put(security.denyAll())
     .delete(security.denyAll())
-  /* Products: Only GET is allowed in order to view products */ // vuln-code-snippet neutral-line changeProductChallenge
-  app.post('/api/Products', security.isAuthorized()) // vuln-code-snippet neutral-line changeProductChallenge
-  // app.put('/api/Products/:id', security.isAuthorized()) // vuln-code-snippet vuln-line changeProductChallenge
+  app.post('/api/Products', security.isAuthorized())
   app.delete('/api/Products/:id', security.denyAll())
-  /* Complaints: POST and GET allowed when logged in only */
   app.get('/api/Complaints', security.isAuthorized())
   app.post('/api/Complaints', security.isAuthorized())
   app.use('/api/Complaints/:id', security.denyAll())
-  /* Recycles: POST and GET allowed when logged in only */
   app.get('/api/Recycles', recycles.blockRecycleItems())
   app.post('/api/Recycles', security.isAuthorized())
-  /* Challenge evaluation before finale takes over */
   app.get('/api/Recycles/:id', recycles.getRecycleItem())
   app.put('/api/Recycles/:id', security.denyAll())
   app.delete('/api/Recycles/:id', security.denyAll())
-  /* SecurityQuestions: Only GET list of questions allowed. */
   app.post('/api/SecurityQuestions', security.denyAll())
   app.use('/api/SecurityQuestions/:id', security.denyAll())
-  /* SecurityAnswers: Only POST of answer allowed. */
   app.get('/api/SecurityAnswers', security.denyAll())
   app.use('/api/SecurityAnswers/:id', security.denyAll())
-  /* REST API */
   app.use('/rest/user/authentication-details', security.isAuthorized())
   app.use('/rest/basket/:id', security.isAuthorized())
   app.use('/rest/basket/:id/order', security.isAuthorized())
-  /* Challenge evaluation before finale takes over */ // vuln-code-snippet hide-start
-  /* Captcha verification before finale takes over */
   app.post('/api/Feedbacks', utils.asyncHandler(verifyCaptcha()))
-  /* User registration challenge verifications before finale takes over */
   app.post('/api/Users', (req: Request, res: Response, next: NextFunction) => {
     if (req.body.email !== undefined && req.body.password !== undefined && req.body.passwordRepeat !== undefined) {
       if (req.body.email.length !== 0 && req.body.password.length !== 0) {
@@ -404,28 +351,20 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     }
     next()
   })
-  // vuln-code-snippet hide-end
-  /* Unauthorized users are not allowed to access B2B API */
   app.use('/b2b/v2', security.isAuthorized())
-  /* Check if the quantity is available in stock and limit per user not exceeded, then add item to basket */
   app.put('/api/BasketItems/:id', security.appendUserId(), utils.asyncHandler(basketItems.quantityCheckBeforeBasketItemUpdate()))
   app.post('/api/BasketItems', security.appendUserId(), utils.asyncHandler(basketItems.quantityCheckBeforeBasketItemAddition()), utils.asyncHandler(basketItems.addBasketItem()))
-  /* Accounting users are allowed to check and update quantities */
   app.delete('/api/Quantitys/:id', security.denyAll())
   app.post('/api/Quantitys', security.denyAll())
   app.use('/api/Quantitys/:id', security.isAccounting(), IpFilter(['123.456.789'], { mode: 'allow' }))
-  /* Feedbacks: Do not allow changes of existing feedback */
   app.put('/api/Feedbacks/:id', security.denyAll())
-  /* PrivacyRequests: Only allowed for authenticated users */
   app.use('/api/PrivacyRequests', security.isAuthorized())
   app.use('/api/PrivacyRequests/:id', security.isAuthorized())
-  /* PaymentMethodRequests: Only allowed for authenticated users */
   app.post('/api/Cards', security.appendUserId())
   app.get('/api/Cards', security.appendUserId(), utils.asyncHandler(payment.getPaymentMethods()))
   app.put('/api/Cards/:id', security.denyAll())
   app.delete('/api/Cards/:id', security.appendUserId(), utils.asyncHandler(payment.delPaymentMethodById()))
   app.get('/api/Cards/:id', security.appendUserId(), utils.asyncHandler(payment.getPaymentMethodById()))
-  /* PrivacyRequests: Only POST allowed for authenticated users */
   app.post('/api/PrivacyRequests', security.isAuthorized())
   app.get('/api/PrivacyRequests', security.denyAll())
   app.use('/api/PrivacyRequests/:id', security.denyAll())
@@ -437,28 +376,22 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.get('/api/Addresss/:id', security.appendUserId(), utils.asyncHandler(address.getAddressById()))
   app.get('/api/Deliverys', utils.asyncHandler(delivery.getDeliveryMethods()))
   app.get('/api/Deliverys/:id', utils.asyncHandler(delivery.getDeliveryMethod()))
-  // vuln-code-snippet end changeProductChallenge
 
-  /* Verify the 2FA Token */
   app.post('/rest/2fa/verify',
     rateLimit({ windowMs: 5 * 60 * 1000, max: 100, validate: false }),
     utils.asyncHandler(twoFactorAuth.verify)
   )
-  /* Check 2FA Status for the current User */
   app.get('/rest/2fa/status', security.isAuthorized(), utils.asyncHandler(twoFactorAuth.status))
-  /* Enable 2FA for the current User */
   app.post('/rest/2fa/setup',
     rateLimit({ windowMs: 5 * 60 * 1000, max: 100, validate: false }),
     security.isAuthorized(),
     utils.asyncHandler(twoFactorAuth.setup)
   )
-  /* Disable 2FA Status for the current User */
   app.post('/rest/2fa/disable',
     rateLimit({ windowMs: 5 * 60 * 1000, max: 100, validate: false }),
     security.isAuthorized(),
     utils.asyncHandler(twoFactorAuth.disable)
   )
-  /* Passkey (WebAuthn) registration requires an authenticated session; sign-in must be public. */
   app.get('/rest/passkey/register-options', security.isAuthorized(), utils.asyncHandler(passkey.registerOptions))
   app.post('/rest/passkey/register-verify', security.isAuthorized(), utils.asyncHandler(passkey.registerVerify))
   app.post('/rest/passkey/login-options', utils.asyncHandler(passkey.loginOptions))
@@ -466,8 +399,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.get('/rest/passkey/credentials', security.isAuthorized(), utils.asyncHandler(passkey.listCredentials))
   app.delete('/rest/passkey/credentials/:id', security.isAuthorized(), utils.asyncHandler(passkey.deleteCredential))
 
-  // vuln-code-snippet start registerAdminChallenge
-  /* Generated API endpoints */
   finale.initialize({ app, sequelize: seq })
 
   const autoModels = [
@@ -493,18 +424,15 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
       pagination: false
     })
 
-    // create a wallet when a new user is registered using API
-    if (name === 'User') { // vuln-code-snippet neutral-line registerAdminChallenge
-      resource.create.send.before((req: Request, res: Response, context: { instance: { id: any }, continue: any }) => { // vuln-code-snippet vuln-line registerAdminChallenge
+    if (name === 'User') {
+      resource.create.send.before((req: Request, res: Response, context: { instance: { id: any }, continue: any }) => {
         WalletModel.create({ UserId: context.instance.id }).catch((err: unknown) => {
           console.log(err)
         })
-        return context.continue // vuln-code-snippet neutral-line registerAdminChallenge
-      }) // vuln-code-snippet neutral-line registerAdminChallenge
-    } // vuln-code-snippet neutral-line registerAdminChallenge
-    // vuln-code-snippet end registerAdminChallenge
+        return context.continue
+      })
+    }
 
-    // translate security questions on-the-fly
     if (name === 'SecurityQuestion') {
       resource.list.fetch.after((req: Request, res: Response, context: { instance: string | any[], continue: any }) => {
         for (let i = 0; i < context.instance.length; i++) {
@@ -518,7 +446,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
       })
     }
 
-    // translate product names and descriptions on-the-fly
     if (name === 'Product') {
       resource.list.fetch.after((req: Request, res: Response, context: { instance: any[], continue: any }) => {
         for (let i = 0; i < context.instance.length; i++) {
@@ -534,7 +461,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
       })
     }
 
-    // fix the api difference between finale (fka epilogue) and previously used sequlize-restful
     resource.all.send.before((req: Request, res: Response, context: { instance: { status: string, data: any }, continue: any }) => {
       context.instance = {
         status: 'success',
@@ -544,7 +470,6 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     })
   }
 
-  /* Custom Restful API */
   app.post('/rest/user/login', login())
   app.get('/rest/user/change-password', utils.asyncHandler(changePassword()))
   app.post('/rest/user/reset-password', utils.asyncHandler(resetPassword()))
@@ -572,54 +497,42 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.get('/rest/deluxe-membership', deluxeMembershipStatus())
   app.post('/rest/deluxe-membership', security.appendUserId(), utils.asyncHandler(upgradeToDeluxe()))
   app.get('/rest/memories', utils.asyncHandler(getMemories()))
-  /* NoSQL API endpoints */
   app.get('/rest/products/:id/reviews', showProductReviews())
   app.put('/rest/products/:id/reviews', utils.asyncHandler(createProductReviews()))
   app.patch('/rest/products/reviews', security.isAuthorized(), updateProductReviews())
   app.post('/rest/products/reviews', security.isAuthorized(), utils.asyncHandler(likeProductReviews()))
 
-  /* Chat API endpoint */
   app.post('/rest/chat', utils.asyncHandler(chat()))
 
-  /* Web3 API endpoints */
   app.post('/rest/web3/submitKey', utils.asyncHandler(checkKeys()))
   app.get('/rest/web3/nftUnlocked', nftUnlocked())
   app.get('/rest/web3/nftMintListen', utils.asyncHandler(nftMintListener()))
   app.post('/rest/web3/walletNFTVerify', walletNFTVerify())
   app.post('/rest/web3/walletExploitAddress', utils.asyncHandler(contractExploitListener()))
 
-  /* B2B Order API */
   app.post('/b2b/v2/orders', b2bOrder())
 
-  /* File Serving */
   app.get('/the/devs/are/so/funny/they/hid/an/easter/egg/within/the/easter/egg', serveEasterEgg())
   app.get('/this/page/is/hidden/behind/an/incredibly/high/paywall/that/could/only/be/unlocked/by/sending/1btc/to/us', servePremiumContent())
   app.get('/we/may/also/instruct/you/to/refuse/all/reasonably/necessary/responsibility', servePrivacyPolicyProof())
 
-  /* Route for dataerasure page */
   app.use('/dataerasure', dataErasure)
 
-  /* Route for redirects */
   app.get('/redirect', performRedirect())
 
-  /* Routes for promotion video page */
   app.get('/promotion', promotionVideo())
   app.get('/video', getVideo())
 
-  /* Routes for profile page */
   app.get('/profile', utils.asyncHandler(getUserProfile()))
   app.post('/profile', utils.asyncHandler(updateUserProfile()))
 
-  /* Serve metrics before the Angular catch-all so the route is reachable in all environments */
   app.get('/metrics', utils.asyncHandler(metrics.serveMetrics()))
 
   app.use(utils.asyncHandler(serveAngularClient()))
 
-  /* Error Handling */
   app.use(errorhandler())
 }
 
-// Function called first to ensure that all the i18n files are reloaded successfully before other linked operations.
 if (process.env.NODE_ENV !== 'test') {
   restoreOverwrittenFilesWithOriginals().then(() => {
     configureApp(app, sequelize)
@@ -661,11 +574,9 @@ while (!expectedModels.every(model => Object.keys(sequelize.models).includes(mod
 }
 logger.info(`Entity models ${colors.bold(Object.keys(sequelize.models).length.toString())} of ${colors.bold(expectedModels.length.toString())} are initialized (${colors.green('SUCCESS')})`)
 
-// vuln-code-snippet start exposedMetricsChallenge
-/* Serve metrics */
 let metricsUpdateLoop: any
-const Metrics = metrics.observeMetrics() // vuln-code-snippet neutral-line exposedMetricsChallenge
-app.get('/metrics', utils.asyncHandler(metrics.serveMetrics())) // vuln-code-snippet vuln-line exposedMetricsChallenge
+const Metrics = metrics.observeMetrics()
+app.get('/metrics', utils.asyncHandler(metrics.serveMetrics()))
 errorhandler.title = `${config.get<string>('application.name')} (Express ${utils.version('express')})`
 
 export async function start (readyCallback?: () => void) {
@@ -677,7 +588,7 @@ export async function start (readyCallback?: () => void) {
   const port = process.env.PORT ?? config.get('server.port')
   process.env.BASE_PATH = process.env.BASE_PATH ?? config.get('server.basePath')
 
-  metricsUpdateLoop = Metrics.updateLoop() // vuln-code-snippet neutral-line exposedMetricsChallenge
+  metricsUpdateLoop = Metrics.updateLoop()
 
   server.listen(port, () => {
     logger.info(colors.cyan(`Server listening on port ${colors.bold(`${port}`)}`))
@@ -689,13 +600,12 @@ export async function start (readyCallback?: () => void) {
       readyCallback()
     }
     if (process.env.EXIT_ON_READY === 'true') {
-      // used to benchmark startup time
       process.exit(0)
     }
   })
 
-  void collectDurationPromise('customizeApplication', customizeApplication)() // vuln-code-snippet hide-line
-  void collectDurationPromise('customizeEasterEgg', customizeEasterEgg)() // vuln-code-snippet hide-line
+  void collectDurationPromise('customizeApplication', customizeApplication)()
+  void collectDurationPromise('customizeEasterEgg', customizeEasterEgg)()
 }
 
 export function close (exitCode: number | undefined) {
@@ -707,7 +617,6 @@ export function close (exitCode: number | undefined) {
     process.exit(exitCode)
   }
 }
-// vuln-code-snippet end exposedMetricsChallenge
 
 export async function createApp (options?: { inMemoryDb?: boolean }) {
   const seq = options?.inMemoryDb ? createSequelize({ inMemory: true }) : sequelize
@@ -725,6 +634,5 @@ export async function createApp (options?: { inMemoryDb?: boolean }) {
   return { app: testApp, sequelize: seq }
 }
 
-// stop server on sigint or sigterm signals
 process.on('SIGINT', () => { close(0) })
 process.on('SIGTERM', () => { close(0) })

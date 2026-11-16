@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { type Request, type Response, type NextFunction } from 'express'
 
 import * as security from '../lib/insecurity'
@@ -10,10 +5,8 @@ import { type Review } from '@juice-shop/data/types'
 import * as db from '../data/mongodb'
 import * as utils from '../lib/utils'
 
-// Blocking sleep function as in native MongoDB
-// @ts-expect-error FIXME Type safety broken for global object
+// @ts-expect-error
 global.sleep = (time: number) => {
-  // Ensure that users don't accidentally dos their servers for too long
   if (time > 2000) {
     time = 2000
   }
@@ -25,7 +18,6 @@ global.sleep = (time: number) => {
 
 export function showProductReviews () {
   return (req: Request, res: Response, next: NextFunction) => {
-    // Truncate id to avoid unintentional RCE
     const id = utils.trunc(req.params.id, 40)
 
     db.reviewsCollection.find({ $where: 'this.product == ' + id }).then((reviews: Review[]) => {

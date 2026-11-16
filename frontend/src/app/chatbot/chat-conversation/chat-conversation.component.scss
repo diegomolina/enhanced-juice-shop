@@ -1,8 +1,3 @@
-/*!
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 @use '../../../styles/variables' as *;
 
 :host {
@@ -12,8 +7,6 @@
   overflow: hidden;
   min-height: 0;
 }
-
-// Chat header
 
 .chat-header {
   display: flex;
@@ -39,8 +32,6 @@
   font-size: 15px;
   font-weight: 500;
 }
-
-// Chat window
 
 .chat-window {
   flex: 1;
@@ -220,8 +211,6 @@
     transform: scale(1); }
 }
 
-// Message editing
-
 .edit-message {
   align-self: center;
   flex-shrink: 0;
@@ -287,8 +276,6 @@
   justify-content: flex-end;
   gap: $space-xs;
 }
-
-// Input area
 
 .input-area {
   padding: $space-s 0 $space-l;

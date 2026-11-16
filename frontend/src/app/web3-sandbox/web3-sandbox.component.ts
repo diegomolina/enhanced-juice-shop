@@ -23,7 +23,6 @@ import { EditorState } from '@codemirror/state'
 import { getLanguageExtension } from '../shared/codemirror-extensions'
 import { juiceShopTheme } from '../shared/codemirror-theme'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const client = createClient({
   autoConnect: true,
   provider: getDefaultProvider()

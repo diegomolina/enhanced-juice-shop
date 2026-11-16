@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import fs from 'node:fs'
 import path from 'node:path'
 import config from 'config'
@@ -192,7 +187,7 @@ function calculateApplicableDiscount (basket: BasketModel, req: Request) {
     const couponDate = Number(couponData[1])
     const campaign = campaigns[couponCode as keyof typeof campaigns]
 
-    if (campaign && couponDate == campaign.validOn) { // eslint-disable-line eqeqeq
+    if (campaign && couponDate == campaign.validOn) {
       return campaign.discount
     }
   }

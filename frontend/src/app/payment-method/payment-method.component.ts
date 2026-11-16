@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { UntypedFormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { Component, EventEmitter, Input, type OnInit, Output, inject, ChangeDetectionStrategy } from '@angular/core'
 import { PaymentService } from '../Services/payment.service'
@@ -39,7 +34,6 @@ export class PaymentMethodComponent implements OnInit {
   @Input() public allowDelete = false
   public displayedColumns = ['Number', 'Name', 'Expiry']
   public nameControl: UntypedFormControl = new UntypedFormControl('', [Validators.required])
-  // eslint-disable-next-line no-loss-of-precision
   public numberControl: UntypedFormControl = new UntypedFormControl('', [Validators.required, Validators.min(1000000000000000), Validators.max(9999999999999999)])
   public monthControl: UntypedFormControl = new UntypedFormControl('', [Validators.required])
   public yearControl: UntypedFormControl = new UntypedFormControl('', [Validators.required])

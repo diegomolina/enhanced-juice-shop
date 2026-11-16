@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { max, maxLength, min, required, schema } from '@angular/forms/signals'
 
 export const MIN_MOBILE_NUMBER = 1000000

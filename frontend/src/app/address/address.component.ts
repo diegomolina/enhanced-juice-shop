@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { Component, type OnInit, DestroyRef, NgZone, ChangeDetectionStrategy, computed, inject, input, output, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { catchError, EMPTY, Subject, switchMap } from 'rxjs'

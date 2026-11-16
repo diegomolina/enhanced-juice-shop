@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import type { BasketItemModel } from '@juice-shop/models/basketitem'
 import type { ComplaintModel } from '@juice-shop/models/complaint'
 import type { FeedbackModel } from '@juice-shop/models/feedback'

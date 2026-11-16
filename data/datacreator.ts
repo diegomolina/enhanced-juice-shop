@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { AddressModel } from '../models/address'
 import { PasskeyModel } from '../models/passkey'
 import { BasketModel } from '../models/basket'
@@ -269,7 +264,6 @@ async function createProducts () {
     product.deluxePrice = product.deluxePrice ?? product.price
     product.description = product.description || 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.'
 
-    // set default image values
     product.image = product.image ?? 'undefined.png'
     if (utils.isUrl(product.image)) {
       const imageUrl = product.image
@@ -279,7 +273,6 @@ async function createProducts () {
     return product
   })
 
-  // add Challenge specific information
   const christmasChallengeProduct = products.find(({ useForChristmasSpecialChallenge }) => useForChristmasSpecialChallenge)
   const pastebinLeakChallengeProduct = products.find(({ keywordsForPastebinDataLeakChallenge }) => keywordsForPastebinDataLeakChallenge)
   const tamperingChallengeProduct = products.find(({ urlForProductTamperingChallenge }) => urlForProductTamperingChallenge)
@@ -322,7 +315,7 @@ async function createProducts () {
           }
         ).then(async (persistedProduct) => {
           if (persistedProduct != null) {
-            if (deletedDate) void deleteProduct(persistedProduct.id) // TODO Rename into "isDeleted" or "deletedFlag" in config for v14.x release
+            if (deletedDate) void deleteProduct(persistedProduct.id)
           } else {
             throw new Error('No persisted product found!')
           }

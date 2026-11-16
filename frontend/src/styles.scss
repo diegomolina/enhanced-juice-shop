@@ -1,7 +1,3 @@
-/*!
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
 @use '@angular/material' as mat;
 
 @use 'sass:color';
@@ -92,8 +88,6 @@
     stroke: mat.get-theme-color($theme, tertiary);
   }
 }
-
-// sets css variables to be used across components during runtime
 @mixin css-vars($theme) {
   $primary-base: mat.get-theme-color($theme, primary, 60);
   --theme-primary: #{$primary-base};
@@ -152,8 +146,6 @@
   --theme-background-darkest: #{color.adjust(mat.get-theme-color($theme, surface-container), $lightness: -14%)};
 
   --theme-thumbnail-border: 1px solid #{mat.get-theme-color($theme, primary)};
-
-  // make background of search field transparent
   --mdc-filled-text-field-container-color: #0000;
   --mdc-filled-text-field-disabled-container-color: #0000;
 }
@@ -200,23 +192,17 @@
 @mixin theme-overrides($nav, $bg, $prim, $text) {
   $is-dark: color.channel($bg, 'lightness', $space: hsl) < 50%;
   $is-text-light: color.channel($text, 'lightness', $space: hsl) > 50%;
-
-  // Overriding project-specific background/surface variables
   --theme-background: #{$prim};
   --theme-background-lighter: #{color.adjust($prim, $lightness: if(sass($is-dark): 5%; else: -5%))};
   --theme-background-light: #{color.adjust($prim, $lightness: if(sass($is-dark): 10%; else: -10%))};
   --theme-background-darker: #{$bg};
   --theme-background-dark: #{color.adjust($bg, $lightness: if(sass($is-dark): -5%; else: 5%))};
   --theme-background-darkest: #{color.adjust($bg, $lightness: -10%)};
-
-  // Overriding project-specific text variables
   --theme-text: #{$text};
   --theme-text-lighter: #{color.adjust($text, $lightness: if(sass($is-text-light): 5%; else: -5%))};
   --theme-text-light: #{if(sass($is-text-light): #fff; else: #000)};
   --theme-text-darker: #{color.adjust($text, $lightness: if(sass($is-text-light): -10%; else: 10%))};
   --theme-text-dark: #{color.adjust($text, $lightness: if(sass($is-text-light): -25%; else: 25%))};
-
-  // Explicit Material M3 System tokens
   --mat-sys-surface: #{$bg};
   --mat-sys-on-surface: #{$text};
   --mat-sys-surface-container: #{$prim};
@@ -225,17 +211,12 @@
   --mat-sys-outline: #{color.adjust($bg, $lightness: if(sass($is-dark): 20%; else: -20%))};
   --mat-sys-outline-variant: #{color.adjust($bg, $lightness: if(sass($is-dark): 10%; else: -10%))};
 
-  // Component-specific alignment
-
-  // Top app bar / Toolbar (mat-toolbar)
   .mat-mdc-toolbar,
   mat-toolbar {
     --mat-toolbar-container-background-color: #{$nav};
     --mat-toolbar-container-text-color: #{if(sass(color.channel($nav, 'lightness', $space: hsl) > 60%): #000; else: #fff)};
     color: var(--mat-toolbar-container-text-color);
   }
-
-  // Cards / Tiles / Panels
   $border-color: if(sass($is-dark): rgba(255, 255, 255, 0.1); else: rgba(0, 0, 0, 0.1));
 
   .mat-mdc-card,
@@ -245,14 +226,12 @@
     border: 1px solid #{$border-color};
   }
 
-  // Dialogs
   .mat-mdc-dialog-container .mdc-dialog__surface {
     --mdc-dialog-container-color: #{color.adjust($prim, $lightness: 1%)};
     background-color: var(--mdc-dialog-container-color);
     border: 1px solid #{$border-color};
   }
 
-  // Form Fields
   .mat-mdc-form-field {
     --mdc-filled-text-field-container-color: #{color.adjust($prim, $lightness: 5%)};
     --mdc-outlined-text-field-container-color: #{color.adjust($prim, $lightness: 5%)};
@@ -264,7 +243,6 @@
     color: #{color.adjust($text, $lightness: if(sass($is-text-light): -25%; else: 25%))};
   }
 
-  // Chips (mat-chip, MDC chips)
   .mat-mdc-standard-chip,
   .mat-mdc-chip,
   .suggestion-chip {
@@ -280,7 +258,6 @@
     --mdc-chip-elevated-container-color: #{$nav};
   }
 
-  // Buttons
   .mat-mdc-raised-button.mat-primary,
   .mat-mdc-unelevated-button.mat-primary {
     --mdc-filled-button-container-color: #{$nav};
@@ -295,7 +272,6 @@
     color: #{if(sass($is-dark): rgba(255, 255, 255, 0.5); else: rgba(0, 0, 0, 0.5))} !important;
   }
 
-  // Tertiary-colored raised/unelevated buttons (e.g. "Log in with Google")
   .mat-mdc-raised-button.mat-tertiary,
   .mat-mdc-unelevated-button.mat-tertiary {
     --mdc-filled-button-container-color: #{$nav};
@@ -308,7 +284,6 @@
     }
   }
 
-  // Slide toggles
   .mat-mdc-slide-toggle {
     --mat-slide-toggle-selected-handle-color: #{$nav};
     --mat-slide-toggle-selected-track-color: #{color.adjust($nav, $alpha: -0.46)};
@@ -344,25 +319,17 @@
 .bluegrey-lightgreen-theme {
   @include custom-components-theme($bluegrey-lightgreen-theme);
   @include css-vars($bluegrey-lightgreen-theme);
-
-  // --- Target Theme Overrides ---
-
-  // Overriding project-specific background/surface variables
   --theme-background: #3e3e3e;
   --theme-background-lighter: #4a4a4a;
   --theme-background-light: #5a5a5a;
   --theme-background-darker: #333638;
   --theme-background-dark: #303030;
   --theme-background-darkest: #2b2b2b;
-
-  // Overriding project-specific text variables
   --theme-text: #e8ecef;
   --theme-text-lighter: #f2f5f7;
   --theme-text-light: #fff;
   --theme-text-darker: #b8c0c7;
   --theme-text-dark: #7f8a93;
-
-  // Explicit Material M3 System tokens (ensures charcoal grey canvas)
   --mat-sys-surface: #333638;
   --mat-sys-on-surface: #e8ecef;
   --mat-sys-surface-container: #3e3e3e;
@@ -371,9 +338,6 @@
   --mat-sys-outline: #5a5a5a;
   --mat-sys-outline-variant: #404244;
 
-  // Component-specific alignment
-
-  // Top app bar / Toolbar (mat-toolbar)
   .mat-mdc-toolbar,
   mat-toolbar {
     --mat-toolbar-container-background-color: #4f6f7a;
@@ -381,7 +345,6 @@
     color: var(--mat-toolbar-container-text-color);
   }
 
-  // Cards / Tiles / Panels
   .mat-mdc-card,
   .mat-expansion-panel {
     --mdc-elevated-card-container-color: #3e3e3e;
@@ -389,14 +352,12 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  // Dialogs
   .mat-mdc-dialog-container .mdc-dialog__surface {
     --mdc-dialog-container-color: #3f3f3f;
     background-color: var(--mdc-dialog-container-color);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  // Form Fields
   .mat-mdc-form-field {
     --mdc-filled-text-field-container-color: #4a4a4a;
     --mdc-outlined-text-field-container-color: #4a4a4a;
@@ -408,7 +369,6 @@
     color: #b8c0c7;
   }
 
-  // Chips (mat-chip, MDC chips)
   .mat-mdc-standard-chip,
   .mat-mdc-chip,
   .suggestion-chip {
@@ -424,7 +384,6 @@
     --mdc-chip-elevated-container-color: #81a823;
   }
 
-  // Buttons
   .mat-mdc-raised-button.mat-primary,
   .mat-mdc-unelevated-button.mat-primary {
     --mdc-filled-button-container-color: #516b77;
@@ -439,15 +398,12 @@
     color: #7f8a93 !important;
   }
 
-  // Slide toggles
   .mat-mdc-slide-toggle {
     --mat-slide-toggle-selected-handle-color: #4f6f7a;
     --mat-slide-toggle-selected-track-color: rgba(79, 111, 122, 0.54);
     --mat-slide-toggle-unselected-handle-color: #7f8a93;
     --mat-slide-toggle-unselected-track-color: #4a4a4a;
   }
-
-  // Error / Warn color overrides (making them more red)
   --theme-warn: #f44336;
   --theme-warn-lighter: #{color.adjust(#f44336, $lightness: 6%)};
   --theme-warn-light: #{color.adjust(#f44336, $lightness: 10%)};
@@ -493,26 +449,18 @@
   @include custom-components-theme($neon-fire-theme);
   @include css-vars($neon-fire-theme);
 
-  @include score-star-theme($neon-fire-theme); // Re-include to fix empty-star color
-
-  // --- Neon Fire Theme Overrides ---
-
-  // Overriding project-specific background/surface variables
+  @include score-star-theme($neon-fire-theme);
   --theme-background: #000;
   --theme-background-lighter: #111;
   --theme-background-light: #222;
   --theme-background-darker: #000;
   --theme-background-dark: #000;
   --theme-background-darkest: #000;
-
-  // Overriding project-specific text variables
   --theme-text: #ff2d55;
   --theme-text-lighter: #ff4d6e;
   --theme-text-light: #ff708a;
   --theme-text-darker: #e60039;
   --theme-text-dark: #c03;
-
-  // Explicit Material M3 System tokens
   --mat-sys-surface: #000;
   --mat-sys-on-surface: #ff2d55;
   --mat-sys-surface-container: #000;
@@ -520,14 +468,10 @@
   --mat-sys-on-surface-variant: #ff4d6e;
   --mat-sys-outline: #ff2d55;
   --mat-sys-outline-variant: #e60039;
-
-  // Extra system tokens for neon-fire colors
   --mat-sys-primary: #ff2d55;
   --mat-sys-on-primary: #000;
   --mat-sys-tertiary: #fc0;
   --mat-sys-on-tertiary: #000;
-
-  // Custom font and typography
   font-family: 'VT323', ui-monospace, monospace;
   --mat-sys-display-large-font: 'VT323', ui-monospace, monospace;
   --mat-sys-display-medium-font: 'VT323', ui-monospace, monospace;
@@ -541,8 +485,6 @@
   --mat-sys-label-large-font: 'VT323', ui-monospace, monospace;
   --mat-sys-label-medium-font: 'VT323', ui-monospace, monospace;
   --mat-sys-label-small-font: 'VT323', ui-monospace, monospace;
-
-  // Readable stack for long-form text, inputs and chat prose
   --neon-readable-font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 
   --mat-sys-body-large-font: 'VT323', ui-monospace, monospace;
@@ -564,7 +506,6 @@
     font-family: var(--neon-readable-font) !important;
   }
 
-  // Link customizations
   a {
     color: #fc0;
   }
@@ -573,9 +514,6 @@
     text-shadow: 0 0 8px #fc0;
   }
 
-  // Component-specific alignment
-
-  // Top app bar / Toolbar (mat-toolbar)
   .mat-mdc-toolbar,
   mat-toolbar {
     --mat-toolbar-container-background-color: #000;
@@ -583,7 +521,6 @@
     color: var(--mat-toolbar-container-text-color);
   }
 
-  // Cards / Tiles / Panels
   .mat-mdc-card,
   .mat-expansion-panel {
     --mdc-elevated-card-container-color: #000;
@@ -592,21 +529,18 @@
     box-shadow: 0 0 10px rgba(255, 45, 85, 0.6);
   }
 
-  // Dialogs
   .mat-mdc-dialog-container .mdc-dialog__surface {
     --mdc-dialog-container-color: #000;
     background-color: var(--mdc-dialog-container-color);
     border: 1px solid #ff2d55;
   }
 
-  // Form Fields
   .mat-mdc-form-field {
     --mdc-filled-text-field-container-color: #111;
     --mdc-outlined-text-field-container-color: #111;
     --mat-form-field-focus-outline-color: #ff2d55;
   }
 
-  // Chips (mat-chip, MDC chips)
   .mat-mdc-standard-chip,
   .mat-mdc-chip,
   .suggestion-chip {
@@ -623,7 +557,6 @@
     --mdc-chip-label-text-color: #000;
   }
 
-  // Buttons
   .mat-mdc-button,
   .mat-mdc-raised-button {
     text-transform: uppercase;
@@ -658,7 +591,6 @@
     box-shadow: 0 0 10px rgba(255, 45, 85, 0.6);
   }
 
-  // Slide toggles
   .mat-mdc-slide-toggle {
     --mat-slide-toggle-selected-handle-color: #ff2d55;
     --mat-slide-toggle-selected-track-color: rgba(255, 45, 85, 0.54);
@@ -666,7 +598,6 @@
     --mat-slide-toggle-unselected-track-color: #111;
   }
 
-  // Scrollbar overrides
   ::-webkit-scrollbar {
     width: 10px;
   }
@@ -679,8 +610,6 @@
     background: #ff2d55;
     box-shadow: 0 0 5px rgba(255, 45, 85, 0.6);
   }
-
-  // Error / Warn color overrides (making them more neon-red)
   --theme-warn: #ff3e3e;
   --mat-sys-error: #ff3e3e;
   --mat-sys-on-error: #000;
@@ -705,11 +634,6 @@
 }
 
 .mat-expansion-panel-header {
-  // If the panel, that the header is in, is inside an element being animated by Angular,
-  // the default behavior is to block all child animations. This means that the header's
-  // height won't kick in until the parent animation is done. We add a fallback to the
-  // header's default height. If the animations aren't blocked, these styles will be overridden
-  // by the inline styles from the animations module.
   .ng-animating .mat-expansion-panel & {
     min-height: 48px;
   }
@@ -720,13 +644,6 @@
 }
 
 .mat-expansion-panel-content {
-  // If the expansion panel is inside an element being animated by Angular,
-  // the default behavior is to block all child animations. This means that the
-  // default `height: 0` won't kick in until the parent animation is over, which
-  // will cause the panel to appear open, before it snaps into place. We don't want
-  // to set the default height to zero, because it'll break the `height: '*'` from
-  // the animation definitions. Instead we add a fallback that only applies only if
-  // it's inside a parent that is mid-animation.
   .ng-animating .mat-expansion-panel:not(.mat-expanded) & {
     height: 0;
     overflow: hidden;
@@ -745,8 +662,6 @@ div.mdc-card {
   white-space: nowrap;
 }
 
-
-/* override Angular Material tooltip max-height for score-board hints */
 .mat-mdc-tooltip-surface {
   max-height: none !important;
 }

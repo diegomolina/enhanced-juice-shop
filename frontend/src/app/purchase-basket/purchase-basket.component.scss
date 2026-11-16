@@ -1,17 +1,9 @@
-/*!
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 @use '../../styles/variables' as *;
-
-// Variables
 $bg-heading: rgba(0, 0, 0, 0.2);
 $cell-padding: $space-2xs;
 $border-radius: 4px;
 $transition-speed: 0.2s;
 
-// Header styles
 h1 {
   margin-bottom: $space-s;
 }
@@ -31,7 +23,6 @@ h1 small {
   padding: $space-xs $space-m;
 }
 
-// Table styles
 mat-table {
   margin-bottom: $space-s;
   table-layout: fixed;
@@ -51,7 +42,7 @@ mat-row {
 }
 
 mat-row:last-of-type {
-  border-bottom: 0 !important; // no border after the last product
+  border-bottom: 0 !important;
 }
 
 mat-row:hover {
@@ -96,7 +87,7 @@ mat-footer-cell:last-of-type {
     width: 100%;
   }
 }
-// Image styles
+
 .img-thumbnail {
   border-radius: $border-radius;
   height: auto;
@@ -111,13 +102,11 @@ mat-footer-cell:last-of-type {
   transform: scale(1.05);
 }
 
-// Footer styles
 .mat-mdc-footer-cell {
   font-size: 1.1em;
   font-weight: 500;
 }
 
-// Content alignment
 .content-align {
   align-items: center;
   display: flex;
@@ -132,7 +121,6 @@ mat-footer-cell:last-of-type {
   font-size: initial;
 }
 
-// Quantity controls
 .quantity-controls {
   align-items: center;
   display: flex;
@@ -153,7 +141,6 @@ mat-footer-cell:last-of-type {
   text-align: center;
 }
 
-// Price display
 #price {
   font-size: large;
   font-weight: 500;
@@ -161,8 +148,6 @@ mat-footer-cell:last-of-type {
   text-align: right;
   width: 100%;
 }
-
-// Responsive adjustments
 @media (max-width: 768px) {
   .img-thumbnail {
     max-width: 70px;
@@ -182,7 +167,6 @@ mat-footer-cell:last-of-type {
 
 }
 
-// Delete button
 .far.fa-trash-alt {
   color: rgba(0, 0, 0, 0.54);
   transition: color $transition-speed ease;

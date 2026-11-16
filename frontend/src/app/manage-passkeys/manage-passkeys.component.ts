@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { Component, type OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core'
 import { DatePipe } from '@angular/common'
 import { firstValueFrom } from 'rxjs'

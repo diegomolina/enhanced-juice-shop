@@ -1,6 +1,3 @@
-// Filters font and SVG assets from the esbuild stats.json to produce a cleaner bundle diagram.
-// Called by the "bundle-visualizer" npm script before running esbuild-visualizer.
-
 import { readFile, writeFile } from 'fs/promises'
 
 const statsPath = './dist/frontend/browser-stats.json'

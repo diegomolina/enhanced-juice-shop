@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import {
   Model,
   type InferAttributes,
@@ -32,7 +27,7 @@ InferCreationAttributes<Product>
   declare deluxePrice: number
   declare image: string
   declare alternateImages: CreationOptional<AlternateImage[] | null>
-  declare BasketItem?: CreationOptional<BasketItemModel> // Note this is optional since it's only populated when explicitly requested in code
+  declare BasketItem?: CreationOptional<BasketItemModel>
 }
 
 const ProductModelInit = (sequelize: Sequelize) => {

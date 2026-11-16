@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
-// Subset of https://github.com/passkeydeveloper/passkey-authenticator-aaguids covering the
-// browser, OS and most common password manager passkey providers.
 export const passkeyProviders: Record<string, string> = {
   'fbfc3007-154e-4ecc-8c0b-6e020557d7bd': 'Apple Passwords',
   'dd4ec289-e01d-41c9-bb89-70fa845d4bf2': 'iCloud Keychain (Managed)',

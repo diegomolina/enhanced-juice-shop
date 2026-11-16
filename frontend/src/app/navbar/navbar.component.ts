@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { Component, EventEmitter, NgZone, type OnInit, Output, inject, ChangeDetectionStrategy } from '@angular/core'
 import { environment } from '../../environments/environment'
 import { UserService } from '../Services/user.service'
@@ -170,17 +165,14 @@ export class NavbarComponent implements OnInit {
 
     const query = this.languageSearchQuery.toLowerCase()
     this.filteredLanguages = this.languages.filter((lang: any) => {
-      // Filter by language name
       if (lang.lang.toLowerCase().includes(query)) {
         return true
       }
 
-      // Filter by language key (e.g., 'en', 'fr', 'hi')
       if (lang.key.toLowerCase().includes(query)) {
         return true
       }
 
-      // Filter by any additional language properties if needed
       if (lang.shortKey?.toLowerCase()?.includes(query)) {
         return true
       }

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { UserService } from '../Services/user.service'
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core'
 import { form, FormField, FormRoot, maxLength, minLength, required, validate } from '@angular/forms/signals'

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import config from 'config'
 import {
   type InferAttributes,
@@ -30,9 +25,9 @@ InferCreationAttributes<User>
   declare isActive: CreationOptional<boolean>
 }
 
-const UserModelInit = (sequelize: Sequelize) => { // vuln-code-snippet start weakPasswordChallenge
+const UserModelInit = (sequelize: Sequelize) => {
   User.init(
-    { // vuln-code-snippet hide-start
+    {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -52,13 +47,13 @@ const UserModelInit = (sequelize: Sequelize) => { // vuln-code-snippet start wea
         set (email: string) {
           this.setDataValue('email', email)
         }
-      }, // vuln-code-snippet hide-end
+      },
       password: {
         type: DataTypes.STRING,
         set (clearTextPassword: string) {
-          this.setDataValue('password', security.hash(clearTextPassword)) // vuln-code-snippet vuln-line weakPasswordChallenge
+          this.setDataValue('password', security.hash(clearTextPassword))
         }
-      }, // vuln-code-snippet end weakPasswordChallenge
+      },
       role: {
         type: DataTypes.STRING,
         defaultValue: 'customer',

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { environment } from '../../environments/environment'
 import { ComplaintService } from '../Services/complaint.service'
 import { UserService } from '../Services/user.service'
@@ -38,8 +33,8 @@ export class ComplaintComponent implements OnInit {
 
   public customerControl: UntypedFormControl = new UntypedFormControl({ value: '', disabled: true }, [])
   public messageControl: UntypedFormControl = new UntypedFormControl('', [Validators.required, Validators.maxLength(this.maxMessageLength)])
-  @ViewChild('fileControl', { static: true }) fileControl!: ElementRef // For controlling the DOM Element for file input.
-  public fileUploadError: any = undefined // For controlling error handling related to file input.
+  @ViewChild('fileControl', { static: true }) fileControl!: ElementRef
+  public fileUploadError: any = undefined
   public uploader: FileUploader = new FileUploader({
     url: environment.hostServer + '/file-upload',
     authToken: `Bearer ${localStorage.getItem('token')}`,

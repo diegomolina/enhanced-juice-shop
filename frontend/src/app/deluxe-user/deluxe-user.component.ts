@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { Component, NgZone, type OnInit, inject, ChangeDetectionStrategy } from '@angular/core'
 import { UserService } from '../Services/user.service'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -53,7 +48,7 @@ export class DeluxeUserComponent implements OnInit {
   ngOnInit (): void {
     this.configurationService.getApplicationConfiguration().subscribe({
       next: (config) => {
-        const decalParam: string = this.route.snapshot.queryParams.testDecal // "Forgotten" test parameter to play with different stickers on the delivery box image
+        const decalParam: string = this.route.snapshot.queryParams.testDecal
         if (config?.application) {
           if (config.application.name) {
             this.applicationName = config.application.name

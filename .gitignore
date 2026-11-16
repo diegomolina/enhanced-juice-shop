@@ -1,4 +1,3 @@
-# App
 node_modules/
 *.sqlite
 order_*.pdf
@@ -14,7 +13,6 @@ i18n/*.invalid
 !data/static/i18n/*.json
 /data/juiceshop.sqlite-journal
 
-# Build
 .sass-cache/
 build/
 cache/
@@ -29,7 +27,6 @@ frontend/src/**/*.js
 /bom.json
 /bom.xml
 
-# IDEs
 .idea/
 .vscode/
 out/
@@ -38,16 +35,12 @@ out/
 *.iws
 *.swp
 
-# Branch ghpages
 assets/
 !frontend/src/assets/
 
-# Custom configuration files
 config/*.yml
 !config/default.yml
 
-# System Files
 .DS_Store
 
-# Misc
 .playwright-mcp/

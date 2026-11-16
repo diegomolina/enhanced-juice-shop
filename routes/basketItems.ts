@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { type Request, type Response, type NextFunction } from 'express'
 import { BasketItemModel } from '../models/basketitem'
 import { QuantityModel } from '../models/quantity'
@@ -32,7 +27,7 @@ export function addBasketItem () {
     }
 
     const user = security.authenticatedUsers.from(req)
-    if (user && basketIds[0] && basketIds[0] !== 'undefined' && Number(user.bid) != Number(basketIds[0])) { // eslint-disable-line eqeqeq
+    if (user && basketIds[0] && basketIds[0] !== 'undefined' && Number(user.bid) != Number(basketIds[0])) {
       res.status(401).send('{\'error\' : \'Invalid BasketId\'}')
     } else {
       const basketItem = {
@@ -85,9 +80,8 @@ async function quantityCheck (req: Request, res: Response, next: NextFunction, i
     throw new Error('No such product found!')
   }
 
-  // is product limited per user and order, except if user is deluxe?
   if (!product.limitPerUser || (product.limitPerUser && product.limitPerUser >= quantity) || security.isDeluxe(req)) {
-    if (product.quantity >= quantity) { // enough in stock?
+    if (product.quantity >= quantity) {
       next()
     } else {
       res.status(400).json({ error: res.__('We are out of stock! Sorry for the inconvenience.') })

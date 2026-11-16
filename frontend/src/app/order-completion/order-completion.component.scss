@@ -1,8 +1,3 @@
-/*!
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 @use '../../styles/variables' as *;
 
 .order-completion-header {
@@ -60,7 +55,6 @@ mat-header-cell {
 }
 
 .table-container {
-  // without setting it to auto, angular material limit the height and cuts off the table
   --mat-table-footer-container-height: auto;
 }
 

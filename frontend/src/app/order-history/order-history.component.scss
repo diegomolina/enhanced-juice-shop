@@ -1,8 +1,3 @@
-/*!
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 @use '../../styles/variables' as *;
 
 .heading {
@@ -77,12 +72,10 @@ mat-card-title {
 }
 
 .mat-mdc-header-cell:first-child {
-  //  Apply 24px padding only to the first column
   padding-left: $space-l !important;
 }
 
 .mat-mdc-header-cell:not(:first-child) {
-  //  Keep 2px for the rest
   padding-left: $space-3xs !important;
 }
 

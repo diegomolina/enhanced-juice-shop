@@ -1,19 +1,13 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { type Request, type Response, type NextFunction } from 'express'
 
 import * as db from '../data/mongodb'
 
-// vuln-code-snippet start noSqlReviewsChallenge forgedReviewChallenge
 export function updateProductReviews () {
   return (req: Request, res: Response, next: NextFunction) => {
-    db.reviewsCollection.update( // vuln-code-snippet neutral-line forgedReviewChallenge
-      { _id: req.body.id }, // vuln-code-snippet vuln-line noSqlReviewsChallenge forgedReviewChallenge
+    db.reviewsCollection.update(
+      { _id: req.body.id },
       { $set: { message: req.body.message } },
-      { multi: true } // vuln-code-snippet vuln-line noSqlReviewsChallenge
+      { multi: true }
     ).then(
       (result: { modified: number, original: Array<{ author: any }> }) => {
         res.json(result)
@@ -22,4 +16,3 @@ export function updateProductReviews () {
       })
   }
 }
-// vuln-code-snippet end noSqlReviewsChallenge forgedReviewChallenge

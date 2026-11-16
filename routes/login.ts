@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
 import { type Request, type Response, type NextFunction } from 'express'
 
 import { BasketModel } from '../models/basket'
@@ -11,12 +7,11 @@ import * as models from '../models/index'
 import { type User } from '../data/types'
 import * as utils from '../lib/utils'
 
-// vuln-code-snippet start loginAdminChallenge loginBenderChallenge loginJimChallenge
 export function login () {
   function afterLogin (user: User, res: Response, next: NextFunction) {
     BasketModel.findOrCreate({ where: { UserId: user.id } })
       .then(([basket]: [BasketModel, boolean]) => {
-        const authenticatedUser = { data: user, bid: basket.id } // keep track of original basket
+        const authenticatedUser = { data: user, bid: basket.id }
         const token = security.authorize(authenticatedUser)
         security.authenticatedUsers.put(token, authenticatedUser)
         res.json({ authentication: { token, bid: basket.id, umail: user.email } })
@@ -26,8 +21,8 @@ export function login () {
   }
 
   return (req: Request, res: Response, next: NextFunction) => {
-    models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${security.hash(req.body.password || '')}' AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-line loginAdminChallenge loginBenderChallenge loginJimChallenge
-      .then((authenticatedUser) => { // vuln-code-snippet neutral-line loginAdminChallenge loginBenderChallenge loginJimChallenge
+    models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${security.hash(req.body.password || '')}' AND deletedAt IS NULL`, { model: UserModel, plain: true })
+      .then((authenticatedUser) => {
         const user = utils.queryResultToJson(authenticatedUser)
         if (user.data?.id && user.data.totpSecret !== '') {
           res.status(401).json({
@@ -48,5 +43,4 @@ export function login () {
         next(error)
       })
   }
-  // vuln-code-snippet end loginAdminChallenge loginBenderChallenge loginJimChallenge
 }

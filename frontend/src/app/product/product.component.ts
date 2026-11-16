@@ -1,9 +1,3 @@
-/*!
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
-/* eslint-disable @typescript-eslint/prefer-for-of */
 import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core'
 import { BasketService } from '../Services/basket.service'
 import { ProductService } from '../Services/product.service'
@@ -39,12 +33,9 @@ export class ProductComponent {
   isLoggedIn = input.required<boolean>()
   isDeluxe = input.required<boolean>()
 
-  /* Mirrors the candidates of <app-product-image> so the blurred backdrop reuses the image
-     already fetched by the <picture> instead of downloading the fallback on top of it */
   readonly backgroundImage = computed(() => {
     const product = this.item()
     const fallback = `url("${IMAGE_BASE_PATH}${product.image}")`
-    /* image-set() only understands resolution descriptors, so width-based candidates are left out */
     const candidates = (product.alternateImages ?? []).filter((image) => image.density)
     if (candidates.length === 0) {
       return fallback

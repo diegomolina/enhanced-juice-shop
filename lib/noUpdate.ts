@@ -1,4 +1,3 @@
-// Credit for the implementation in JS: https://github.com/daviddossantos/sequelize-notupdate-attributes
 import { type Model, type ModelStatic } from 'sequelize'
 import { type ValidationOptions } from 'sequelize/types/instance-validator'
 import { ValidationError, ValidationErrorItem } from 'sequelize/lib/errors'
@@ -40,7 +39,7 @@ export const makeKeyNonUpdatable = (model: ModelStatic<Model>, column: string) =
         validationErrors.push(
           new ValidationErrorItem(
             `\`${fieldName}\` cannot be updated due \`noUpdate\` constraint`,
-            null as any, // null type + null origin → "null: msg" in ValidationError.message
+            null as any,
             fieldName,
             '',
             instance,

@@ -1,13 +1,13 @@
 server:
   port: 3000
   basePath: ''
-  baseUrl: 'http://localhost:3000' # used for CSAF, e.g. https://example.com
+  baseUrl: 'http://localhost:3000'
 application:
-  domain: juice-sh.op # for pre-loaded email users
+  domain: juice-sh.op
   name: 'OWASP Juice Shop'
   logo: JuiceShop_Logo.png
   favicon: favicon_js.ico
-  theme: bluegrey-lightgreen # Options: bluegrey-lightgreen blue-lightblue deeppurple-amber indigo-pink pink-bluegrey purple-green deeporange-indigo lime-green neon-fire
+  theme: bluegrey-lightgreen
   showVersionNumber: true
   showGitHubLinks: true
   numberOfRandomFakeUsers: 0
@@ -53,7 +53,7 @@ application:
     encryption: 'https://keybase.io/bkimminich/pgp_keys.asc?fingerprint=19c01cb7157e4645e9e2c863062a85a8cbfbdcda'
     acknowledgements: '/#/about'
     hiring: '/#/jobs'
-    csaf: '/.well-known/csaf/provider-metadata.json' # scheme,host,port taken from baseUrl
+    csaf: '/.well-known/csaf/provider-metadata.json'
   promotion:
     video: owasp_promo.mp4
     subtitles: owasp_promo.vtt
@@ -487,7 +487,7 @@ products:
     name: 'OWASP Juice Shop Logo (3D-printed)'
     description: 'This rare item was designed and handcrafted in Sweden. This is why it is so incredibly expensive despite its complete lack of purpose.'
     price: 99.99
-    image: 3d_keychain.jpg # Exif metadata contains "OpenSCAD" as subtle hint...
+    image: 3d_keychain.jpg
     alternateImages:
       - file: 3d_keychain-1x.avif
         format: image/avif
@@ -498,7 +498,7 @@ products:
       - file: 3d_keychain-3x.avif
         format: image/avif
         density: 3x
-    fileForRetrieveBlueprintChallenge: JuiceShop.stl # ...to blueprint file type
+    fileForRetrieveBlueprintChallenge: JuiceShop.stl
     exifForBlueprintChallenge:
       - OpenSCAD
   -

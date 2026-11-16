@@ -1,8 +1,3 @@
-/*!
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core'
 import { type AlternateImage } from '../Models/product.model'
 

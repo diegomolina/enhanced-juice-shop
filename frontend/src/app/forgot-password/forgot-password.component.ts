@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { UserService } from '../Services/user.service'
 import { SecurityQuestionService } from '../Services/security-question.service'
 import { disabled, email, form, FormField, FormRoot, minLength, required, validate } from '@angular/forms/signals'
@@ -122,7 +117,6 @@ export class ForgotPasswordComponent {
 
   resetForm () {
     this.forgotPasswordForm().reset({ ...this.initialModel })
-    // drop the looked-up question so the form returns to its initial state
     this.securityQuestion.set(undefined)
   }
 

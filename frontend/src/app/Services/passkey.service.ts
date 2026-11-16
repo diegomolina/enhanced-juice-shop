@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import { Injectable, inject } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { map } from 'rxjs/operators'
@@ -76,7 +71,6 @@ export class PasskeyService {
       .pipe(map(() => undefined))
   }
 
-  // Thin wrappers around the browser WebAuthn ceremonies so components can mock them via this service
   createAssertion (options: PublicKeyCredentialRequestOptionsJSON): Promise<AuthenticationResponseJSON> {
     return startAuthentication({ optionsJSON: options })
   }

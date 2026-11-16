@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
 import packageJson from '../package.json'
 import fs from 'node:fs'
 import http from 'node:http'
@@ -44,7 +39,7 @@ export const trunc = function (str: string, length: number) {
 
 export const version = (module?: string) => {
   if (module) {
-    // @ts-expect-error FIXME Ignoring any type issue on purpose
+    // @ts-expect-error
     return packageJson.dependencies[module]
   } else {
     return packageJson.version

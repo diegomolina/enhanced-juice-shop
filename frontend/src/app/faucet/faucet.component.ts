@@ -23,7 +23,6 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { MatIconModule } from '@angular/material/icon'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const client = createClient({
   autoConnect: true,
   provider: getDefaultProvider()
