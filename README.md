@@ -1,6 +1,6 @@
-# Juice Shop
+# Test Shop
 
-An online store for fresh juices, smoothies and merchandise. Customers can browse
+An online store for a variety of merchandise. Customers can browse
 and search the product catalog, register and sign in, manage a basket, check out
 with saved addresses and payment methods, write product reviews, send feedback
 and complaints, and chat with the shop assistant.
