@@ -31,7 +31,7 @@ export class ChatWelcomeScreenComponent implements OnInit {
   private readonly inputBox = viewChild(ChatInputBoxComponent)
 
   conversations = signal<StoredConversation[]>(this.conversationStorage.getAll())
-  chatBotName = signal('Juicy')
+  chatBotName = signal('Shop Assistant')
   sampleQuestions = signal<string[]>([])
 
   ngOnInit () {

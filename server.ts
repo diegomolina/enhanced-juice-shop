@@ -45,7 +45,6 @@ import { SecurityQuestionModel } from './models/securityQuestion'
 import logger from './lib/logger'
 import * as utils from './lib/utils'
 import * as security from './lib/security'
-import { customizeTerraformContent } from './lib/terraformCustomization'
 import validateConfig from './lib/startup/validateConfig'
 import cleanupFtpFolder from './lib/startup/cleanupFtpFolder'
 import customizePlanetPage from './lib/startup/customizePlanetPage'
@@ -228,7 +227,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     if (filePath.endsWith('.tf') || filePath.endsWith('.yml') || filePath.endsWith('Dockerfile')) {
       fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) return next()
-        const content = filePath.endsWith('.tf') ? customizeTerraformContent(data) : data
+        const content = data
         res.type('text/plain').send(content)
       })
     } else {

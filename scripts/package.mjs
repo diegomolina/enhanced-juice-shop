@@ -50,7 +50,7 @@ const archiveName = `${pkg.name}-${pkg.version}` +
   (cpuArch ? `_${cpuArch}` : '') +
   ext
 const archivePath = path.join('dist', archiveName)
-const prefix = `juice-shop_${pkg.version}`
+const prefix = `test-shop_${pkg.version}`
 
 await fs.mkdir('dist', { recursive: true })
 

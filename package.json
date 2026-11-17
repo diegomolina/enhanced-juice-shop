@@ -1,36 +1,9 @@
 {
-  "name": "juice-shop",
+  "name": "test-shop",
   "version": "20.4.0-SNAPSHOT",
   "private": true,
-  "description": "Online juice store web application",
-  "homepage": "https://owasp-juice.shop",
-  "bugs": {
-    "url": "https://github.com/juice-shop/juice-shop/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/juice-shop/juice-shop.git"
-  },
+  "description": "Online store web application",
   "license": "MIT",
-  "author": "Björn Kimminich <bjoern.kimminich@owasp.org> (https://kimminich.de)",
-  "contributors": [
-    "Björn Kimminich",
-    "Jannik Hollenbach",
-    "Aashish683",
-    "greenkeeper[bot]",
-    "MarcRler",
-    "agrawalarpit14",
-    "Scar26",
-    "JuiceShopBot",
-    "ShubhamPalriwala",
-    "CaptainFreak",
-    "Supratik Das",
-    "the-pro",
-    "Harsh Kumar",
-    "rishabhkeshan",
-    "Ziyang Li",
-    "..."
-  ],
   "scripts": {
     "build": "npm run build:frontend && npm run build:server",
     "build:frontend": "cd frontend && npm run build",

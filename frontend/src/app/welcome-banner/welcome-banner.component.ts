@@ -19,8 +19,8 @@ export class WelcomeBannerComponent implements OnInit {
   private readonly configurationService = inject(ConfigurationService)
   private readonly cookieService = inject(CookieService)
 
-  public title = 'Welcome to OWASP Juice Shop'
-  public message = "<p>Welcome to our online juice store! Browse our selection of fresh juices, smoothies and merchandise, add your favorites to the basket and enjoy fast delivery right to your door.</p>"
+  public title = 'Welcome to Test Shop'
+  public message = "<p>Welcome to our online store! Browse our selection of everyday goods, gifts and collectibles, add your favorites to the basket and enjoy fast delivery right to your door.</p>"
 
   private readonly welcomeBannerStatusCookieKey = 'welcomebanner_status'
 

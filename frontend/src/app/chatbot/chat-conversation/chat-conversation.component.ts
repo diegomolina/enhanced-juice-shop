@@ -50,7 +50,7 @@ export class ChatConversationComponent implements OnInit {
   showToolCalls = signal(false)
   isToolCallsCollapsed = signal(true)
   messageInput = signal('')
-  chatBotName = signal('Juicy the Smart Assistant')
+  chatBotName = signal('Shop Assistant')
   editingIndex = signal<number | null>(null)
   editDraft = signal('')
 

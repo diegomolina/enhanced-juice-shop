@@ -11,7 +11,7 @@ i18n/*.json
 i18n/*.invalid
 !frontend/src/assets/i18n/*.json
 !data/static/i18n/*.json
-/data/juiceshop.sqlite-journal
+/data/shop.sqlite-journal
 
 .sass-cache/
 build/

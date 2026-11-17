@@ -213,7 +213,7 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'juicy-nft',
+    path: 'chatbot-nft',
     component: NFTUnlockComponent
   },
   {

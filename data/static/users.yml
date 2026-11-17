@@ -83,14 +83,14 @@
       expMonth: 2
       expYear: 2081
 -
-  email: bjoern.kimminich@gmail.com
-  username: bkimminich
-  password: 'bW9jLmxpYW1nQGhjaW5pbW1pay5ucmVvamI='
+  email: lukas.brenner@example.com
+  username: lbrenner
+  password: 'bW9jLmVscG1heGVAcmVubmVyYi5zYWt1bA=='
   customDomain: true
-  key: bjoernGoogle
+  key: lukasGoogle
   role: 'admin'
   address:
-    - fullName: 'Bjoern Kimminich'
+    - fullName: 'Lukas Brenner'
       mobileNum: 4917000001
       zipCode: '25436'
       streetAddress: 'Am Lokalhorst 42'
@@ -98,7 +98,7 @@
       state: 'Schleswig-Holstein'
       country: 'Germany'
   card:
-    - fullName: 'Bjoern Kimminich'
+    - fullName: 'Lukas Brenner'
       cardNum: 4815205605542754
       expMonth: 12
       expYear: 2092
@@ -164,9 +164,9 @@
     id: 8
     answer: 'Dr. Dr. Dr. Dr. Zoidberg'
 -
-  email: bjoern
+  email: lukas
   password: 'monkey summer birthday are all bad passwords but work just fine in a long passphrase'
-  key: bjoern
+  key: lukas
   profileImage: '12.png'
   role: 'admin'
   isAdmin: true
@@ -174,10 +174,10 @@
     id: 9
     answer: 'West-2082'
 -
-  email: bjoern@owasp.org
+  email: lukas@example.org
   password: 'kitten lesser pooch karate buffoon indoors'
   customDomain: true
-  key: bjoernOwasp
+  key: lukasPrivate
   role: 'deluxe'
   profileImage: '13.jpg'
   securityQuestion:
@@ -262,7 +262,7 @@
   key: evm
   role: 'deluxe'
   feedback:
-    comment: 'Please send me the juicy chatbot NFT in my wallet at /juicy-nft : "purpose betray marriage blame crunch monitor spin slide donate sport lift clutch"'
+    comment: 'Please send me the chatbot NFT in my wallet at /chatbot-nft : "purpose betray marriage blame crunch monitor spin slide donate sport lift clutch"'
     rating: 1
   securityQuestion:
     id: 10

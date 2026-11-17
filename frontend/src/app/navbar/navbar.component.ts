@@ -97,9 +97,9 @@ export class NavbarComponent implements OnInit {
   public languageSearchQuery = ''
   public selectedLanguage = 'placeholder'
   public version = ''
-  public applicationName = 'OWASP Juice Shop'
+  public applicationName = 'Test Shop'
   public showGitHubLink = true
-  public logoSrc = 'assets/public/images/JuiceShop_Logo.png'
+  public logoSrc = 'assets/public/images/shop_logo.png'
   public shortKeyLang = 'placeholder'
   public itemTotal = 0
 

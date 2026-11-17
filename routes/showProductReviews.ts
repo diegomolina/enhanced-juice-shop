@@ -1,7 +1,7 @@
 import { type Request, type Response, type NextFunction } from 'express'
 
 import * as security from '../lib/security'
-import { type Review } from '@juice-shop/data/types'
+import { type Review } from '@app/data/types'
 import * as db from '../data/mongodb'
 import * as utils from '../lib/utils'
 

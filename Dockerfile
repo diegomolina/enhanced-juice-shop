@@ -1,6 +1,6 @@
 FROM node:24 AS installer
-COPY . /juice-shop
-WORKDIR /juice-shop
+COPY . /test-shop
+WORKDIR /test-shop
 RUN npm install -g typescript@^6.0.3
 RUN npm install --omit=dev
 RUN npm dedupe --omit=dev
@@ -21,15 +21,13 @@ RUN npm run sbom
 FROM gcr.io/distroless/nodejs24-debian13
 ARG BUILD_DATE
 ARG VCS_REF
-LABEL maintainer="Bjoern Kimminich <bjoern.kimminich@owasp.org>" \
-    org.opencontainers.image.title="OWASP Juice Shop" \
-    org.opencontainers.image.authors="Bjoern Kimminich <bjoern.kimminich@owasp.org>" \
+LABEL org.opencontainers.image.title="Test Shop" \
     org.opencontainers.image.licenses="MIT" \
     org.opencontainers.image.version="20.4.0-SNAPSHOT" \
     org.opencontainers.image.revision=$VCS_REF \
     org.opencontainers.image.created=$BUILD_DATE
-WORKDIR /juice-shop
-COPY --from=installer --chown=65532:0 /juice-shop .
+WORKDIR /test-shop
+COPY --from=installer --chown=65532:0 /test-shop .
 USER 65532
 EXPOSE 3000
-CMD ["/juice-shop/build/app.js"]
+CMD ["/test-shop/build/app.js"]

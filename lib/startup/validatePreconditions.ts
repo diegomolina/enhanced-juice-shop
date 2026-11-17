@@ -11,7 +11,6 @@ import validateDependencies from './validateDependencies'
 
 export interface Dependency {
   dependency: string
-  documentation: string
   dependentFeatures: string[]
   missing?: boolean
 }
@@ -19,7 +18,6 @@ export interface Dependency {
 export const variableDependencies: Record<string, Dependency> = {
   ALCHEMY_API_KEY: {
     dependency: 'Alchemy API Key',
-    documentation: 'https://howto-web3.owasp-juice.shop',
     dependentFeatures: ['NFT minting', 'Web3 wallet']
   }
 }
@@ -27,12 +25,10 @@ export const variableDependencies: Record<string, Dependency> = {
 export const domainDependencies: Record<string, Dependency> = {
   'https://www.alchemy.com/': {
     dependency: 'Alchemy API',
-    documentation: 'https://howto-web3.owasp-juice.shop',
     dependentFeatures: ['NFT minting', 'Web3 wallet']
   },
   [config.get<string>('application.chatBot.llmApiUrl')]: {
     dependency: 'LLM API',
-    documentation: 'https://howto-llm.owasp-juice.shop',
     dependentFeatures: ['Chatbot']
   }
 }
@@ -66,7 +62,7 @@ const validatePreconditions = async ({ exitOnFailure = true } = {}) => {
   preconditionResults['https://www.alchemy.com/'] = alchemyDomainReachable
   preconditionResults.ALCHEMY_API_KEY = alchemyEnvVarExists
   if (!alchemyDomainReachable || !alchemyEnvVarExists) {
-    logger.info(`Check ${colors.bold('https://howto-web3.owasp-juice.shop')} for instructions on how to set up and configure the Alchemy API`)
+    logger.info(`Set the ${colors.bold('ALCHEMY_API_KEY')} environment variable and allow access to the Alchemy API to enable the Web3 features`)
   }
   const llmApiUrl = config.get<string>('application.chatBot.llmApiUrl')
   const llmApiReachable = await checkIfDomainReachable(llmApiUrl)
@@ -78,14 +74,12 @@ const validatePreconditions = async ({ exitOnFailure = true } = {}) => {
     llmModelAvailable = await checkIfLlmModelAvailable(llmApiUrl)
     variableDependencies[llmModel] = {
       dependency: 'LLM Model',
-      documentation: 'https://howto-llm.owasp-juice.shop',
       dependentFeatures: ['Chatbot']
     }
     preconditionResults[llmModel] = llmModelAvailable
     if (!isOllamaUrl(llmApiUrl)) {
       variableDependencies.LLM_API_KEY = {
         dependency: 'LLM API Key',
-        documentation: 'https://howto-llm.owasp-juice.shop',
         dependentFeatures: ['Chatbot']
       }
       llmApiKeyEnvVarExists = checkIfEnvironmentVariableExists('LLM_API_KEY')
@@ -93,7 +87,7 @@ const validatePreconditions = async ({ exitOnFailure = true } = {}) => {
     }
   }
   if (!llmApiReachable || !llmApiKeyEnvVarExists || !llmModelAvailable) {
-    logger.info(`Check ${colors.bold('https://howto-llm.owasp-juice.shop')} for instructions on how to set up and configure the LLM API`)
+    logger.info(`Configure ${colors.bold('application.chatBot.llmApiUrl')} and ${colors.bold('application.chatBot.model')} (and ${colors.bold('LLM_API_KEY')} if required) to enable the chatbot`)
   }
 
   resolvePreconditionsReady()

@@ -21,7 +21,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { EditorView, basicSetup } from 'codemirror'
 import { EditorState } from '@codemirror/state'
 import { getLanguageExtension } from '../shared/codemirror-extensions'
-import { juiceShopTheme } from '../shared/codemirror-theme'
+import { shopEditorThemeExtension } from '../shared/codemirror-theme'
 
 const client = createClient({
   autoConnect: true,
@@ -89,7 +89,7 @@ contract HelloWorld {
         doc: this.code,
         extensions: [
           basicSetup,
-          ...juiceShopTheme(),
+          ...shopEditorThemeExtension(),
           getLanguageExtension('solidity'),
           EditorView.lineWrapping,
           EditorView.updateListener.of(update => {

@@ -42,13 +42,13 @@ npm run serve:dev
 Build the image:
 
 ```bash
-docker build -t juice-shop .
+docker build -t test-shop .
 ```
 
 Run the container:
 
 ```bash
-docker run --rm -p 3000:3000 juice-shop
+docker run --rm -p 3000:3000 test-shop
 ```
 
 The shop is then available at <http://localhost:3000>.

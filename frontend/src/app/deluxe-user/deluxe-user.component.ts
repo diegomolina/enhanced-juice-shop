@@ -24,8 +24,8 @@ export class DeluxeUserComponent implements OnInit {
 
   public membershipCost = 0
   public error?: string = undefined
-  public applicationName = 'OWASP Juice Shop'
-  public logoSrc = 'assets/public/images/JuiceShop_Logo.png'
+  public applicationName = 'Test Shop'
+  public logoSrc = 'assets/public/images/shop_logo.png'
 
   public SHOWCASES = [
     {

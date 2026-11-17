@@ -18,8 +18,8 @@ const restoreOverwrittenFilesWithOriginals = async () => {
 
       if (existsSync(path.resolve('frontend/dist'))) {
         copyFileSync(
-          path.resolve('data/static/owasp_promo.vtt'),
-          path.resolve('frontend/dist/frontend/assets/public/videos/owasp_promo.vtt')
+          path.resolve('data/static/promo.vtt'),
+          path.resolve('frontend/dist/frontend/assets/public/videos/promo.vtt')
         )
       }
 

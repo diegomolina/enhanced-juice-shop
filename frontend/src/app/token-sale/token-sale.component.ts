@@ -21,7 +21,7 @@ library.add(faBitcoin, faUniversity, faGraduationCap, faCommentAlt, faComments, 
 export class TokenSaleComponent implements OnInit {
   private readonly configurationService = inject(ConfigurationService)
 
-  public altcoinName = 'Juicycoin'
+  public altcoinName = 'Shopcoin'
 
   ngOnInit (): void {
     this.configurationService.getApplicationConfiguration().subscribe({
